@@ -49,6 +49,10 @@ Copy-Glob $winuiDir '*.pri'
 Copy-Glob $winuiDir '*.dll'
 Copy-Glob $winuiDir '*.json'
 
+# 运行时资源文件夹（XAML/MUI/WinUI 资源等）
+Get-ChildItem -Path $winuiDir -Directory -ErrorAction SilentlyContinue |
+    ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $outDir $_.Name) -Recurse -Force }
+
 # 右键菜单包
 Copy-IfExists (Join-Path $winuiDir 'FileLocksmithContextMenuPackage.msix') $outDir | Out-Null
 Copy-Glob $winuiDir 'PowerToys.FileLocksmithContextMenu*'

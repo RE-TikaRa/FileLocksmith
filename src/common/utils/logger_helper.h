@@ -27,7 +27,6 @@ namespace LoggerHelpers
     {
         std::filesystem::path logFolderPath(appPath);
         logFolderPath.append(LogSettings::logPath);
-        logFolderPath.append(get_product_version());
         return logFolderPath;
     }
 
@@ -81,6 +80,11 @@ namespace LoggerHelpers
 
         for (const auto& dir : folders)
         {
+            if (!dir.is_directory())
+            {
+                continue;
+            }
+
             if (dir != currentVersionLogFolder)
             {
                 try
@@ -117,7 +121,6 @@ namespace LoggerHelpers
         
         auto currentFolder = rootFolder;
         currentFolder.append(LogSettings::logPath);
-        currentFolder.append(get_product_version());
 
         auto logsPath = currentFolder;
         logsPath.append(L"log.log");

@@ -30,7 +30,9 @@ File Locksmith 是一个用于定位并解除文件/文件夹占用的工具。�
 `last-run.log`：上次选择路径列表（UTF-16 + 换行，空行终止）
 
 **日志**
-`Logs\<版本>\log.log`
+- `Logs\log.log`（原生日志）
+- `Logs\Log_YYYY-MM-DD.log`（托管日志）
+> 不再使用版本子目录，历史的 `Logs\<版本>` 可删除。
 
 ## 组策略（GPO）
 
@@ -82,9 +84,18 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 
 - `x64/Release/WinUI3Apps`
 
+**快捷脚本**
+- 仅构建 UI：`build_project.bat`
+- 构建 + 便携版打包：`build_and_pack.bat`
+
+**清理缓存（推荐在重新构建前执行）**
+- 删除 `x64/`、`artifacts/FileLocksmithPortable/`
+- 删除 `src/**/bin` 与 `src/**/obj`
+- 删除旧版日志子目录 `Logs\<版本>`（如果仍存在）
+
 **构建 UI（Release x64）**
 ```
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /p:Configuration=Release /p:Platform=x64 /p:DisableSpectreMitigation=true /p:TreatWarningsAsErrors=false /p:RunAnalyzersDuringBuild=false /p:EnableNETAnalyzers=false
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64 /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
 ```
 
 **构建 CLI（Release x64）**
@@ -112,6 +123,10 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 ```
 powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -Platform x64 -Configuration Release
 ```
+
+**便携版构建/打包常见问题**
+- **输出目录为空**：`pack.ps1` 依赖 `x64/Release/WinUI3Apps`。请先构建 UI，再打包。
+- **便携版点击关于/设置闪退（MUI 资源缺失）**：若输出目录缺少 `FileLocksmithXAML`、`Assets` 或语言目录（如 `zh-CN`），WinUI 资源加载会崩溃。`pack.ps1` 已改为复制 `WinUI3Apps` 下所有子目录，若仍异常请重新构建并打包。
 
 ## 依赖说明
 

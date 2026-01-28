@@ -27,7 +27,7 @@ namespace ManagedCommon
         private static readonly string Version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown";
 
         /// <summary>
-        /// Gets the path to the log directory for the current version of the app.
+        /// Gets the path to the log directory for the app.
         /// </summary>
         public static string CurrentVersionLogDirectoryPath { get; private set; }
 
@@ -50,7 +50,7 @@ namespace ManagedCommon
         public static void InitializeLogger(string applicationLogPath, bool isLocalLow = false)
         {
             string versionedPath = LogDirectoryPath(applicationLogPath, isLocalLow);
-            string basePath = Path.GetDirectoryName(versionedPath);
+            string basePath = versionedPath;
 
             if (!Directory.Exists(versionedPath))
             {
@@ -88,8 +88,7 @@ namespace ManagedCommon
                 basePath = Constants.AppDataPath() + applicationLogPath;
             }
 
-            string versionedPath = Path.Combine(basePath, Version);
-            return versionedPath;
+            return basePath;
         }
 
         /// <summary>
