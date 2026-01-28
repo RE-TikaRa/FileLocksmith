@@ -50,13 +50,13 @@ File Locksmith 是一个用于定位并解除文件/文件夹占用的工具。�
 ## CLI 使用
 
 ```
-FileLocksmithCLI.exe [options] <path1> [path2] ...
-Options:
-  --kill      Kill processes locking the files
-  --json      Output results in JSON format
-  --wait      Wait for files to be unlocked
-  --timeout   Timeout in milliseconds for --wait
-  --help      Show this help message
+FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
+选项:
+  --kill      结束占用文件的进程
+  --json      以 JSON 格式输出结果
+  --wait      等待文件解锁
+  --timeout   --wait 的超时（毫秒）
+  --help      显示帮助
 ```
 
 ## 结构速览
@@ -126,4 +126,4 @@ powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -P
 
 ## 许可
 
-本项目遵循仓库内 LICENSE 许可文件（如有）。
+本项目遵循 PowerToys 仓库的原始许可，即 MIT 许可，详见仓库根目录 LICENSE。

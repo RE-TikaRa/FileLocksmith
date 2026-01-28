@@ -5,50 +5,219 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="AboutLabelTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style x:Key="AboutValueTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+        </Style>
+    </Page.Resources>
     <ScrollViewer>
-        <StackPanel Padding="24,24,24,32" Spacing="16">
-            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="28" />
-                <StackPanel Spacing="2">
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="File Locksmith" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="从 PowerToys 分离出的独立工具版本" />
-                </StackPanel>
+        <Grid Padding="24,24,24,32">
+            <StackPanel
+                MaxWidth="860"
+                HorizontalAlignment="Center"
+                Spacing="24">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="关于 File Locksmith" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="File Locksmith · 独立工具版" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                        <Border
+                            Padding="10,4"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource SystemControlForegroundAccentBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <TextBlock
+                                FontWeight="SemiBold"
+                                Text="{x:Bind VersionText}" />
+                        </Border>
+                        <Button
+                            Padding="10,4"
+                            MinHeight="28"
+                            Style="{StaticResource SubtleButtonStyle}"
+                            Click="OnCopyVersionClicked">
+                            <TextBlock Text="复制" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="主要能力" />
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon
+                                    FontSize="12"
+                                    Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                    Glyph="&#xE71D;" />
+                                <TextBlock LineHeight="22" Text="右键菜单快速定位文件或文件夹占用" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon
+                                    FontSize="12"
+                                    Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                    Glyph="&#xE71D;" />
+                                <TextBlock LineHeight="22" Text="查看占用详情与关联进程信息" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon
+                                    FontSize="12"
+                                    Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                    Glyph="&#xE71D;" />
+                                <TextBlock LineHeight="22" Text="一键结束占用进程，立即释放文件" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="项目信息" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="WrapWholeWords"
+                            Text="本项目为 File Locksmith 的独立发行版本，聚焦文件占用诊断与解锁体验。" />
+
+                        <Border
+                            Height="1"
+                            Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                            Opacity="0.6" />
+
+                        <Grid ColumnSpacing="16" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Style="{StaticResource AboutLabelTextStyle}" Text="版本号" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                <TextBlock Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind VersionNumberText}" />
+                                <Button
+                                    Padding="8,2"
+                                    MinHeight="24"
+                                    Style="{StaticResource SubtleButtonStyle}"
+                                    Click="OnCopyVersionClicked">
+                                    <TextBlock Text="复制" />
+                                </Button>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Style="{StaticResource AboutLabelTextStyle}" Text="构建号" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind BuildNumberText}" />
+
+                            <TextBlock Grid.Row="2" Style="{StaticResource AboutLabelTextStyle}" Text="创建日期" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="2026-01-29" />
+
+                            <TextBlock Grid.Row="3" Style="{StaticResource AboutLabelTextStyle}" Text="作者" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="亓翎_Re-TikaRa" />
+
+                            <TextBlock Grid.Row="4" Style="{StaticResource AboutLabelTextStyle}" Text="网站" />
+                            <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                <HyperlinkButton NavigateUri="https://re-tikara.fun">
+                                    <TextBlock
+                                        Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                        Text="re-tikara.fun"
+                                        TextDecorations="Underline" />
+                                </HyperlinkButton>
+                                <Button
+                                    Padding="8,2"
+                                    MinHeight="24"
+                                    Style="{StaticResource SubtleButtonStyle}"
+                                    Click="OnCopyWebsiteClicked">
+                                    <TextBlock Text="复制" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <Grid ColumnSpacing="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Spacing="10">
+                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="快速操作" />
+                            <StackPanel Spacing="6">
+                                <HyperlinkButton NavigateUri="https://re-tikara.fun">
+                                    <TextBlock
+                                        Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                        Text="打开项目主页"
+                                        TextDecorations="Underline" />
+                                </HyperlinkButton>
+                                <Button
+                                    Padding="10,4"
+                                    MinHeight="28"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource SubtleButtonStyle}"
+                                    Click="OnCopyVersionClicked">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="14" Glyph="&#xE8C8;" />
+                                        <TextBlock Text="复制版本号" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Grid Grid.Column="1">
+                            <StackPanel Spacing="10">
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="快捷提示" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    LineHeight="22"
+                                    Text="在资源管理器中右键文件或文件夹，即可快速打开 File Locksmith。" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    LineHeight="22"
+                                    Text="需要完整菜单时，使用“显示更多选项”进入扩展菜单。" />
+                            </StackPanel>
+                            <FontIcon
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="64"
+                                Foreground="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                Glyph="&#xE8A7;"
+                                HorizontalAlignment="Right"
+                                Opacity="0.12"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="False" />
+                        </Grid>
+                    </Grid>
+                </Border>
             </StackPanel>
-
-            <TextBlock TextWrapping="WrapWholeWords">
-                File Locksmith 用于查找并解除占用文件或文件夹的进程。
-                你可以从右键菜单快速定位锁定的程序，查看占用详情，并在需要时结束相关进程。
-            </TextBlock>
-
-            <Border
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16">
-                <StackPanel Spacing="8">
-                    <TextBlock FontWeight="SemiBold" Text="项目说明" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        TextWrapping="WrapWholeWords"
-                        Text="本项目为 File Locksmith 的独立发行版本，聚焦文件占用诊断与解锁体验。" />
-
-                    <TextBlock FontWeight="SemiBold" Text="版本信息" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="创建日期：2026-01-29" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="制作者：亓翎_Re-TikaRa" />
-
-                    <TextBlock FontWeight="SemiBold" Text="网站" />
-                    <HyperlinkButton
-                        Content="re-tikara.fun"
-                        NavigateUri="https://re-tikara.fun" />
-                </StackPanel>
-            </Border>
-        </StackPanel>
+        </Grid>
     </ScrollViewer>
 </Page>
