@@ -1,0 +1,52 @@
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+**/x64/
+**/x86/
+**/ARM64/
+**/Debug/
+**/Release/
+**/AppPackages/
+**/MsixOutput/
+**/Generated Files/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+
+# NuGet
+**/packages/
+**/nuget.exe
+
+# Logs
+**/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Artifacts
+artifacts/
+
+# Local settings
+**/*.local.json
+**/*.local.config
+
+# PowerShell
+**/*-help.txt
+
+# Test results
+**/TestResults/
+
+# Rider/JetBrains
+.idea/
+
+# VS Code
+.vscode/
+.codemap/

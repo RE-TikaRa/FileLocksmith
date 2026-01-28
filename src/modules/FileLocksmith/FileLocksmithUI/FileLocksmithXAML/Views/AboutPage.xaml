@@ -1,0 +1,54 @@
+<Page
+    x:Class="PowerToys.FileLocksmithUI.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Padding="24,24,24,32" Spacing="16">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="28" />
+                <StackPanel Spacing="2">
+                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="File Locksmith" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="从 PowerToys 分离出的独立工具版本" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock TextWrapping="WrapWholeWords">
+                File Locksmith 用于查找并解除占用文件或文件夹的进程。
+                你可以从右键菜单快速定位锁定的程序，查看占用详情，并在需要时结束相关进程。
+            </TextBlock>
+
+            <Border
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="SemiBold" Text="项目说明" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="WrapWholeWords"
+                        Text="本项目为 File Locksmith 的独立发行版本，聚焦文件占用诊断与解锁体验。" />
+
+                    <TextBlock FontWeight="SemiBold" Text="版本信息" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="创建日期：2026-01-29" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="制作者：亓翎_Re-TikaRa" />
+
+                    <TextBlock FontWeight="SemiBold" Text="网站" />
+                    <HyperlinkButton
+                        Content="re-tikara.fun"
+                        NavigateUri="https://re-tikara.fun" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
