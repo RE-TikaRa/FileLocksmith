@@ -7,7 +7,7 @@
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/null_sink.h>
-#include <spdlog/sinks/stdout_color_sinks-inl.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <iostream>
 
 using spdlog::sinks_init_list;
