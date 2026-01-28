@@ -1,11 +1,28 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
+#include <ShlObj.h>
 #include <common/version/version.h>
 #include <common/SettingsAPI/settings_helpers.h>
 
 namespace LoggerHelpers
 {
+    inline std::wstring get_filelocksmith_root()
+    {
+        PWSTR localAppData = nullptr;
+        if (FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &localAppData)) || !localAppData)
+        {
+            return {};
+        }
+
+        std::wstring root{ localAppData };
+        CoTaskMemFree(localAppData);
+        root += L"\\ALp_Studio\\FileLocksmith";
+        std::filesystem::create_directories(root);
+        return root;
+    }
+
     inline std::filesystem::path get_log_folder_path(std::wstring_view appPath)
     {
         std::filesystem::path logFolderPath(appPath);
@@ -83,7 +100,19 @@ namespace LoggerHelpers
 
     inline void init_logger(std::wstring moduleName, std::wstring internalPath, std::string loggerName)
     {
-        std::filesystem::path rootFolder(PTSettingsHelper::get_module_save_folder_location(moduleName));
+        std::filesystem::path rootFolder;
+        std::wstring logSettingsPath;
+        const bool isFileLocksmith = (moduleName == L"File Locksmith") || (moduleName.find(L"FileLocksmith") != std::wstring::npos);
+        if (isFileLocksmith)
+        {
+            rootFolder = get_filelocksmith_root();
+            logSettingsPath = (rootFolder / L"log_settings.json").wstring();
+        }
+        else
+        {
+            rootFolder = PTSettingsHelper::get_module_save_folder_location(moduleName);
+            logSettingsPath = PTSettingsHelper::get_log_settings_file_location();
+        }
         rootFolder.append(internalPath);
         
         auto currentFolder = rootFolder;
@@ -92,7 +121,7 @@ namespace LoggerHelpers
 
         auto logsPath = currentFolder;
         logsPath.append(L"log.log");
-        Logger::init(loggerName, logsPath.wstring(), PTSettingsHelper::get_log_settings_file_location());
+        Logger::init(loggerName, logsPath.wstring(), logSettingsPath);
 
         delete_other_versions_log_folders(rootFolder.wstring(), currentFolder); 
     }

@@ -3,20 +3,35 @@
 #include "FileLocksmith.h"
 #include "../FileLocksmithLib/Constants.h"
 
+#include <filesystem>
+#include <ShlObj.h>
+
 namespace winrt::PowerToys::FileLocksmithLib::Interop::implementation
 {
 
 #pragma region HelperMethods
+    std::wstring filelocksmith_root()
+    {
+        PWSTR localAppData = nullptr;
+        if (FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &localAppData)) || !localAppData)
+        {
+            return {};
+        }
+
+        std::wstring root{ localAppData };
+        CoTaskMemFree(localAppData);
+        root += L"\\ALp_Studio\\FileLocksmith";
+        std::filesystem::create_directories(root);
+        return root;
+    }
+
     std::wstring executable_path()
     {
         return pid_to_full_path(GetCurrentProcessId());
     }
     std::wstring paths_file()
     {
-        std::wstring path{ PowerToys::Interop::Constants::AppDataPath() };
-        path += L"\\";
-        path += constants::nonlocalizable::PowerToyName;
-        path += L"\\";
+        std::wstring path{ filelocksmith_root() };
         path += constants::nonlocalizable::LastRunPath;
         return path;
     }

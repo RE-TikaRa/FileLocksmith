@@ -116,7 +116,7 @@ namespace PowerToys.FileLocksmithUI.ViewModels
         private static string GetSettingsFilePath()
         {
             var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Path.Combine(basePath, "Microsoft", "PowerToys", PowerToyName, SettingsFileName);
+            return Path.Combine(basePath, "ALp_Studio", "FileLocksmith", SettingsFileName);
         }
 
         private static bool LoadExtendedMenuSetting()

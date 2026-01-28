@@ -16,7 +16,7 @@ foreach ($key in $keysToRemove)
     }
 }
 
-$sentinelKey = 'HKCU:\Software\Microsoft\PowerToys\FileLocksmith'
+$sentinelKey = 'HKCU:\Software\FileLocksmith'
 if (Test-Path $sentinelKey)
 {
     Remove-ItemProperty -Path $sentinelKey -Name 'ContextMenuRegistered' -ErrorAction SilentlyContinue

@@ -13,7 +13,7 @@ namespace FileLocksmithRuntimeRegistration
         {
             runtime_shell_ext::Spec spec;
             spec.clsid = L"{84D68575-E186-46AD-B0CB-BAEB45EE29C0}";
-            spec.sentinelKey = L"Software\\Microsoft\\PowerToys\\FileLocksmith";
+            spec.sentinelKey = L"Software\\FileLocksmith";
             spec.sentinelValue = L"ContextMenuRegistered";
             spec.dllFileCandidates = { L"PowerToys.FileLocksmithExt.dll" };
             spec.contextMenuHandlerKeyPaths = {

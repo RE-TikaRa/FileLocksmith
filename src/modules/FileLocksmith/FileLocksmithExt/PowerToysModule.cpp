@@ -7,6 +7,7 @@
 #include <common/utils/logger_helper.h>
 #include <common/utils/package.h>
 #include <common/utils/process_path.h>
+#include <common/utils/gpo.h>
 #include <optional>
 
 #include "FileLocksmithLib/Constants.h"
@@ -16,6 +17,46 @@
 
 #include "dllmain.h"
 #include "Generated Files/resource.h"
+
+namespace
+{
+    constexpr wchar_t PolicyRegistryPath[] = L"Software\\Policies\\FileLocksmith";
+    constexpr wchar_t PolicyEnabledValueName[] = L"Enabled";
+
+    powertoys_gpo::gpo_rule_configured_t read_policy_enabled()
+    {
+        DWORD value = 0;
+        DWORD valueSize = sizeof(value);
+        auto status = RegGetValueW(
+            HKEY_LOCAL_MACHINE,
+            PolicyRegistryPath,
+            PolicyEnabledValueName,
+            RRF_RT_REG_DWORD,
+            nullptr,
+            &value,
+            &valueSize);
+
+        if (status == ERROR_FILE_NOT_FOUND || status == ERROR_PATH_NOT_FOUND)
+        {
+            return powertoys_gpo::gpo_rule_configured_not_configured;
+        }
+
+        if (status != ERROR_SUCCESS)
+        {
+            return powertoys_gpo::gpo_rule_configured_unavailable;
+        }
+
+        switch (value)
+        {
+        case 0:
+            return powertoys_gpo::gpo_rule_configured_disabled;
+        case 1:
+            return powertoys_gpo::gpo_rule_configured_enabled;
+        default:
+            return powertoys_gpo::gpo_rule_configured_wrong_value;
+        }
+    }
+}
 
 class FileLocksmithModule : public PowertoyModuleIface
 {
@@ -61,7 +102,7 @@ public:
     // Return the configured status for the gpo policy for the module
     virtual powertoys_gpo::gpo_rule_configured_t gpo_policy_enabled_configuration() override
     {
-        return powertoys_gpo::getConfiguredFileLocksmithEnabledValue();
+        return read_policy_enabled();
     }
 
     // Return JSON with the configuration options.

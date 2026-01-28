@@ -3,13 +3,32 @@
 #include "IPC.h"
 #include "Constants.h"
 
-#include <common/SettingsAPI/settings_helpers.h>
+#include <filesystem>
+#include <ShlObj.h>
 
 constexpr DWORD DefaultPipeBufferSize = 8192;
 constexpr DWORD DefaultPipeTimeoutMillis = 200;
 
 namespace ipc
 {
+    namespace
+    {
+        std::wstring GetFileLocksmithRoot()
+        {
+            PWSTR localAppData = nullptr;
+            if (FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &localAppData)) || !localAppData)
+            {
+                return {};
+            }
+
+            std::wstring root{ localAppData };
+            CoTaskMemFree(localAppData);
+            root += L"\\ALp_Studio\\FileLocksmith";
+            std::filesystem::create_directories(root);
+            return root;
+        }
+    }
+
     Writer::Writer()
     {
         start();
@@ -22,8 +41,7 @@ namespace ipc
 
     HRESULT Writer::start()
     {
-        std::wstring path = PTSettingsHelper::get_module_save_folder_location(constants::nonlocalizable::PowerToyName);
-        path += L"\\";
+        std::wstring path = GetFileLocksmithRoot();
         path += constants::nonlocalizable::LastRunPath;
 
         try

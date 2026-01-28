@@ -3,8 +3,67 @@
 #include "Constants.h"
 
 #include <filesystem>
+#include <ShlObj.h>
 #include <common/utils/json.h>
-#include <common/SettingsAPI/settings_helpers.h>
+
+namespace
+{
+    constexpr wchar_t PolicyRegistryPath[] = L"Software\\Policies\\FileLocksmith";
+    constexpr wchar_t PolicyEnabledValueName[] = L"Enabled";
+
+    enum class PolicyState
+    {
+        NotConfigured,
+        Enabled,
+        Disabled,
+    };
+
+    PolicyState ReadPolicyEnabled()
+    {
+        DWORD value = 0;
+        DWORD valueSize = sizeof(value);
+        auto status = RegGetValueW(
+            HKEY_LOCAL_MACHINE,
+            PolicyRegistryPath,
+            PolicyEnabledValueName,
+            RRF_RT_REG_DWORD,
+            nullptr,
+            &value,
+            &valueSize);
+
+        if (status != ERROR_SUCCESS)
+        {
+            return PolicyState::NotConfigured;
+        }
+
+        if (value == 1)
+        {
+            return PolicyState::Enabled;
+        }
+
+        if (value == 0)
+        {
+            return PolicyState::Disabled;
+        }
+
+        return PolicyState::NotConfigured;
+    }
+
+    std::wstring GetFileLocksmithRoot()
+    {
+        PWSTR localAppData = nullptr;
+        if (FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &localAppData)) || !localAppData)
+        {
+            return {};
+        }
+
+        std::wstring root{ localAppData };
+        CoTaskMemFree(localAppData);
+        root += L"\\ALp_Studio\\FileLocksmith";
+        std::filesystem::create_directories(root);
+        return root;
+    }
+}
 
 static bool LastModifiedTime(const std::wstring& filePath, FILETIME* lpFileTime)
 {
@@ -19,19 +78,33 @@ static bool LastModifiedTime(const std::wstring& filePath, FILETIME* lpFileTime)
 
 FileLocksmithSettings::FileLocksmithSettings()
 {
-    generalJsonFilePath = PTSettingsHelper::get_powertoys_general_save_file_location();
-    std::wstring savePath = PTSettingsHelper::get_module_save_folder_location(constants::nonlocalizable::PowerToyKey);
-    std::error_code ec;
-
+    std::wstring savePath = GetFileLocksmithRoot();
     jsonFilePath = savePath + constants::nonlocalizable::DataFilePath;
-    RefreshEnabledState();
     Load();
+}
+
+bool FileLocksmithSettings::GetEnabled()
+{
+    switch (ReadPolicyEnabled())
+    {
+    case PolicyState::Enabled:
+        return true;
+    case PolicyState::Disabled:
+        return false;
+    case PolicyState::NotConfigured:
+    default:
+        break;
+    }
+
+    Reload();
+    return settings.enabled;
 }
 
 void FileLocksmithSettings::Save()
 {
     json::JsonObject jsonData;
 
+    jsonData.SetNamedValue(constants::nonlocalizable::JsonKeyEnabled, json::value(settings.enabled));
     jsonData.SetNamedValue(constants::nonlocalizable::JsonKeyShowInExtendedContextMenu, json::value(settings.showInExtendedContextMenu));
 
     json::to_file(jsonFilePath, jsonData);
@@ -47,32 +120,6 @@ void FileLocksmithSettings::Load()
     else
     {
         ParseJson();
-    }
-}
-
-void FileLocksmithSettings::RefreshEnabledState()
-{
-    // Load json settings from data file if it is modified in the meantime.
-    FILETIME lastModifiedTime{};
-    if (!(LastModifiedTime(generalJsonFilePath, &lastModifiedTime) &&
-          CompareFileTime(&lastModifiedTime, &lastLoadedGeneralSettingsTime) == 1))
-        return;
-
-    lastLoadedGeneralSettingsTime = lastModifiedTime;
-
-    auto json = json::from_file(generalJsonFilePath);
-    if (!json)
-        return;
-
-    const json::JsonObject& jsonSettings = json.value();
-    try
-    {
-        json::JsonObject modulesEnabledState;
-        json::get(jsonSettings, L"enabled", modulesEnabledState, json::JsonObject{});
-        json::get(modulesEnabledState, L"File Locksmith", settings.enabled, true);
-    }
-    catch (const winrt::hresult_error&)
-    {
     }
 }
 
@@ -95,6 +142,11 @@ void FileLocksmithSettings::ParseJson()
         const json::JsonObject& jsonSettings = json.value();
         try
         {
+            if (json::has(jsonSettings, constants::nonlocalizable::JsonKeyEnabled, json::JsonValueType::Boolean))
+            {
+                settings.enabled = jsonSettings.GetNamedBoolean(constants::nonlocalizable::JsonKeyEnabled);
+            }
+
             if (json::has(jsonSettings, constants::nonlocalizable::JsonKeyShowInExtendedContextMenu, json::JsonValueType::Boolean))
             {
                 settings.showInExtendedContextMenu = jsonSettings.GetNamedBoolean(constants::nonlocalizable::JsonKeyShowInExtendedContextMenu);

@@ -75,7 +75,11 @@ namespace ManagedCommon
         public static string LogDirectoryPath(string applicationLogPath, bool isLocalLow = false)
         {
             string basePath;
-            if (isLocalLow)
+            if (Path.IsPathRooted(applicationLogPath))
+            {
+                basePath = applicationLogPath;
+            }
+            else if (isLocalLow)
             {
                 basePath = Environment.GetEnvironmentVariable("userprofile") + "\\appdata\\LocalLow\\Microsoft\\PowerToys" + applicationLogPath;
             }

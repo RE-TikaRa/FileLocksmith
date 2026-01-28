@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.IO;
 using System.Linq;
 
 using ManagedCommon;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 
 namespace FileLocksmithUI
 {
@@ -29,7 +31,7 @@ namespace FileLocksmithUI
                 Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = appLanguage;
             }
 
-            Logger.InitializeLogger("\\File Locksmith\\FileLocksmithUI\\Logs");
+            Logger.InitializeLogger(Path.Combine(GetFileLocksmithRoot(), "Logs"));
 
             this.InitializeComponent();
 
@@ -43,7 +45,7 @@ namespace FileLocksmithUI
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            if (PowerToys.GPOWrapper.GPOWrapper.GetConfiguredFileLocksmithEnabledValue() == PowerToys.GPOWrapper.GpoRuleConfigured.Disabled)
+            if (IsPolicyDisabled())
             {
                 Logger.LogWarning("Tried to start with a GPO policy setting the utility to always be disabled. Please contact your systems administrator.");
                 Environment.Exit(0); // Current.Exit won't work until there's a window opened.
@@ -79,5 +81,38 @@ namespace FileLocksmithUI
         }
 
         private Window _window;
+
+        private static string GetFileLocksmithRoot()
+        {
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var root = Path.Combine(basePath, "ALp_Studio", "FileLocksmith");
+            Directory.CreateDirectory(root);
+            return root;
+        }
+
+        private static bool IsPolicyDisabled()
+        {
+            const string policyKey = @"SOFTWARE\Policies\FileLocksmith";
+            const string policyValue = "Enabled";
+
+            using var key = Registry.LocalMachine.OpenSubKey(policyKey);
+            if (key == null)
+            {
+                return false;
+            }
+
+            var value = key.GetValue(policyValue);
+            if (value is int intValue)
+            {
+                return intValue == 0;
+            }
+
+            if (value is string stringValue && int.TryParse(stringValue, out var parsed))
+            {
+                return parsed == 0;
+            }
+
+            return false;
+        }
     }
 }

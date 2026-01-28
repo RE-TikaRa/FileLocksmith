@@ -36,7 +36,7 @@ foreach ($key in $handlerKeys)
     Set-ItemProperty -Path $key -Name '(default)' -Value $clsid
 }
 
-$sentinelKey = 'HKCU:\Software\Microsoft\PowerToys\FileLocksmith'
+$sentinelKey = 'HKCU:\Software\FileLocksmith'
 New-Item -Path $sentinelKey -Force | Out-Null
 New-ItemProperty -Path $sentinelKey -Name 'ContextMenuRegistered' -PropertyType DWord -Value 1 -Force | Out-Null
 
