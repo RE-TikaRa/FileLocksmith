@@ -44,5 +44,35 @@ namespace PowerToys.FileLocksmithUI.Views
 
             await ViewModel.SaveExtendedMenuSettingAsync();
         }
+
+        private async void AddToPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.IsBusy)
+            {
+                return;
+            }
+
+            await ViewModel.AddToPathAsync();
+        }
+
+        private async void RemoveFromPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.IsBusy)
+            {
+                return;
+            }
+
+            await ViewModel.RemoveFromPathAsync();
+        }
+
+        private async void ClearLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.IsBusy)
+            {
+                return;
+            }
+
+            await ViewModel.ClearLogsAsync();
+        }
     }
 }

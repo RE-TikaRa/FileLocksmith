@@ -82,6 +82,110 @@ namespace PowerToys.FileLocksmithUI.ViewModels
             IsBusy = false;
         }
 
+        public Task AddToPathAsync()
+        {
+            IsBusy = true;
+            StatusMessage = string.Empty;
+
+            StatusMessage = AddToUserPath(AppContext.BaseDirectory);
+            IsBusy = false;
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveFromPathAsync()
+        {
+            IsBusy = true;
+            StatusMessage = string.Empty;
+
+            StatusMessage = RemoveFromUserPath(AppContext.BaseDirectory);
+            IsBusy = false;
+            return Task.CompletedTask;
+        }
+
+        public async Task ClearLogsAsync()
+        {
+            IsBusy = true;
+            StatusMessage = string.Empty;
+
+            StatusMessage = await Task.Run(ClearLogsDirectory);
+            IsBusy = false;
+        }
+
+        private static string AddToUserPath(string directory)
+        {
+            try
+            {
+                var normalized = directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var current = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User) ?? string.Empty;
+                var paths = current
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+
+                if (paths.Any(p => string.Equals(p, normalized, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return "PATH 已包含当前目录，无需重复添加。";
+                }
+
+                var newValue = string.IsNullOrWhiteSpace(current)
+                    ? normalized
+                    : current.TrimEnd(';') + ";" + normalized;
+
+                Environment.SetEnvironmentVariable("Path", newValue, EnvironmentVariableTarget.User);
+                return "已添加到 PATH（当前用户）。请重新打开终端后使用。";
+            }
+            catch (Exception ex)
+            {
+                return $"写入 PATH 失败：{ex.Message}";
+            }
+        }
+
+        private static string RemoveFromUserPath(string directory)
+        {
+            try
+            {
+                var normalized = directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var current = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User) ?? string.Empty;
+                var entries = current
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+                    .ToArray();
+
+                if (!entries.Any(p => string.Equals(p, normalized, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return "PATH 未包含当前目录，无需移除。";
+                }
+
+                var newValue = string.Join(";", entries.Where(p => !string.Equals(p, normalized, StringComparison.OrdinalIgnoreCase)));
+                Environment.SetEnvironmentVariable("Path", newValue, EnvironmentVariableTarget.User);
+                return "已从 PATH 移除当前目录。请重新打开终端后生效。";
+            }
+            catch (Exception ex)
+            {
+                return $"移除 PATH 失败：{ex.Message}";
+            }
+        }
+
+        private static string ClearLogsDirectory()
+        {
+            try
+            {
+                var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var logsPath = Path.Combine(basePath, "ALp_Studio", "FileLocksmith", "Logs");
+
+                if (!Directory.Exists(logsPath))
+                {
+                    return "日志目录不存在。";
+                }
+
+                Directory.Delete(logsPath, true);
+                return "已删除日志目录。";
+            }
+            catch (Exception ex)
+            {
+                return $"删除日志目录失败：{ex.Message}";
+            }
+        }
+
         private static bool IsContextMenuPackageInstalled()
         {
             try
