@@ -4,6 +4,17 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 本项目从 PowerToys 0.97.1 的 File Locksmith 拆分而来，保留右键菜单体验，并新增管理主界面。
 仅在 Windows 11 24H2 26100.7623 环境下完成验证。
 
+## 界面预览
+
+**首页**
+![首页](https://s2.loli.net/2026/01/29/OuPSVzb8dCiMTa4.png)
+
+**设置页**
+![设置页](https://s2.loli.net/2026/01/29/2HFNnK9el8x6wI5.png)
+
+**关于页**
+![关于页](https://s2.loli.net/2026/01/29/NzBGtx9fDlRy1JY.png)
+
 ## 功能概览
 
 - 右键菜单：快速定位占用文件/文件夹的进程并处理
@@ -156,3 +167,8 @@ powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -P
 ## 许可
 
 本项目遵循 PowerToys 仓库的原始许可，即 MIT 许可，详见仓库根目录 LICENSE。
+
+## 免责声明
+
+本项目为开源研究与学习用途的软件分支，按“现状”提供，不对适用性、稳定性或特定用途做任何保证。  
+使用本项目进行文件占用解除、进程终止、右键菜单注册/卸载等操作可能影响系统或数据，请自行确认风险并对操作结果负责。

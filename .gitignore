@@ -8,7 +8,10 @@
 **/Debug/
 **/Release/
 **/AppPackages/
+**/AppxLayouts/
 **/MsixOutput/
+**/BundleArtifacts/
+**/PackageCache/
 **/Generated Files/
 
 # Visual Studio
@@ -19,13 +22,29 @@
 *.sln.docstates
 *.VC.db
 *.VC.opendb
+*.pdb
+*.ilk
+*.ipdb
+*.iobj
+*.tlog
+*.lastbuildstate
+*.idb
+*.pch
+*.obj
+*.res
+*.cache
 
 # NuGet
 **/packages/
 **/nuget.exe
+*.nupkg
+*.snupkg
 
 # Logs
 **/*.log
+**/*.etl
+**/*.dmp
+**/*.mdmp
 
 # OS
 .DS_Store
@@ -50,3 +69,11 @@ artifacts/
 # VS Code
 .vscode/
 .codemap/
+
+# Temp files
+*.tmp
+*.bak
+*.old
+*.orig
+*.swp
+*~
