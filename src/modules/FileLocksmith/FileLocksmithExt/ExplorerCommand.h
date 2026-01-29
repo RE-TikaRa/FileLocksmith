@@ -48,10 +48,12 @@ private:
 
     // Helpers
     HRESULT LaunchUI(CMINVOKECOMMANDINFO* pici, ipc::Writer* writer);
+    HRESULT LaunchUIElevated(CMINVOKECOMMANDINFO* pici, ipc::Writer* writer);
 
     std::atomic<ULONG> m_ref_count = 1;
     IDataObject* m_data_obj = NULL;
     std::wstring context_menu_caption;
+    std::wstring admin_context_menu_caption;
 
     Shared::Trace::ETWTrace m_etwTrace{ L"FileExplorerExt" };
 };

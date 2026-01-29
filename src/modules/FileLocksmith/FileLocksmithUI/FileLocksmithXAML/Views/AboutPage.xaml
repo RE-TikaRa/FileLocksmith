@@ -47,13 +47,13 @@
                             CornerRadius="8">
                             <TextBlock
                                 FontWeight="SemiBold"
-                                Text="{x:Bind VersionText}" />
+                                Text="{x:Bind CreatedDateHeaderText}" />
                         </Border>
                         <Button
                             Padding="10,4"
                             MinHeight="28"
                             Style="{StaticResource SubtleButtonStyle}"
-                            Click="OnCopyVersionClicked">
+                            Click="OnCopyCreatedDateClicked">
                             <TextBlock Text="复制" />
                         </Button>
                     </StackPanel>
@@ -116,30 +116,30 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                            <TextBlock Style="{StaticResource AboutLabelTextStyle}" Text="版本号" />
+                            <TextBlock Style="{StaticResource AboutLabelTextStyle}" Text="创建日期" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                                <TextBlock Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind VersionNumberText}" />
+                                <TextBlock Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind CreatedDateValueText}" />
                                 <Button
                                     Padding="8,2"
                                     MinHeight="24"
                                     Style="{StaticResource SubtleButtonStyle}"
-                                    Click="OnCopyVersionClicked">
+                                    Click="OnCopyCreatedDateClicked">
                                     <TextBlock Text="复制" />
                                 </Button>
                             </StackPanel>
 
-                            <TextBlock Grid.Row="1" Style="{StaticResource AboutLabelTextStyle}" Text="构建号" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind BuildNumberText}" />
+                            <TextBlock Grid.Row="1" Style="{StaticResource AboutLabelTextStyle}" Text="作者" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="亓翎_Re-TikaRa" />
 
-                            <TextBlock Grid.Row="2" Style="{StaticResource AboutLabelTextStyle}" Text="创建日期" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="2026-01-29" />
-
-                            <TextBlock Grid.Row="3" Style="{StaticResource AboutLabelTextStyle}" Text="作者" />
-                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="亓翎_Re-TikaRa" />
-
-                            <TextBlock Grid.Row="4" Style="{StaticResource AboutLabelTextStyle}" Text="网站" />
-                            <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <TextBlock Grid.Row="2" Style="{StaticResource AboutLabelTextStyle}" Text="网站" />
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
                                 <HyperlinkButton NavigateUri="https://re-tikara.fun">
                                     <TextBlock
                                         Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
@@ -154,6 +154,9 @@
                                     <TextBlock Text="复制" />
                                 </Button>
                             </StackPanel>
+
+                            <TextBlock Grid.Row="3" Style="{StaticResource AboutLabelTextStyle}" Text="对应 PowerToys 版本号" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource AboutValueTextStyle}" Text="{x:Bind PowerToysVersionText}" />
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -184,10 +187,10 @@
                                     MinHeight="28"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource SubtleButtonStyle}"
-                                    Click="OnCopyVersionClicked">
+                                    Click="OnCopyCreatedDateClicked">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                         <FontIcon FontSize="14" Glyph="&#xE8C8;" />
-                                        <TextBlock Text="复制版本号" />
+                                        <TextBlock Text="复制创建日期" />
                                     </StackPanel>
                                 </Button>
                             </StackPanel>

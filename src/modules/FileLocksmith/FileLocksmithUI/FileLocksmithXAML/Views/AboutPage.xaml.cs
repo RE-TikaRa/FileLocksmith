@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Reflection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace PowerToys.FileLocksmithUI.Views
@@ -14,48 +12,23 @@ namespace PowerToys.FileLocksmithUI.Views
     public sealed partial class AboutPage : Page
     {
         private const string WebsiteUrl = "https://re-tikara.fun";
+        private const string CreatedDate = "2026-01-29";
+        private const string PowerToysVersion = "0.97.1";
 
         public AboutPage()
         {
             InitializeComponent();
         }
 
-        public string VersionText => $"版本 {VersionNumberText}";
+        public string CreatedDateHeaderText => $"创建日期 {CreatedDate}";
 
-        public string VersionNumberText
-        {
-            get
-            {
-                var version = GetVersion();
-                return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-            }
-        }
+        public string CreatedDateValueText => CreatedDate;
 
-        public string BuildNumberText
-        {
-            get
-            {
-                var version = GetVersion();
-                return version.Build.ToString();
-            }
-        }
+        public string PowerToysVersionText => PowerToysVersion;
 
-        private static Version GetVersion()
+        private void OnCopyCreatedDateClicked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var version = Package.Current.Id.Version;
-                return new Version(version.Major, version.Minor, version.Build, version.Revision);
-            }
-            catch
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0, 0);
-            }
-        }
-
-        private void OnCopyVersionClicked(object sender, RoutedEventArgs e)
-        {
-            CopyToClipboard(VersionNumberText);
+            CopyToClipboard(CreatedDateValueText);
         }
 
         private void OnCopyWebsiteClicked(object sender, RoutedEventArgs e)

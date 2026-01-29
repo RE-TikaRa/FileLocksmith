@@ -141,12 +141,35 @@ namespace
             return false;
         }
 
-        CComQIPtr<IShellDispatch2>(spdispShell)
-            ->ShellExecuteW(CComBSTR(pszFile),
-                            CComVariant(pszParameters ? pszParameters : L""),
-                            CComVariant(workingDir),
-                            CComVariant(L""),
-                            CComVariant(SW_SHOWNORMAL));
+        CComPtr<IDispatch> spDispatch = spdispShell;
+        if (!spDispatch)
+        {
+            return false;
+        }
+
+        OLECHAR* name = const_cast<OLECHAR*>(L"ShellExecute");
+        DISPID dispid = 0;
+        result = spDispatch->GetIDsOfNames(IID_NULL, &name, 1, LOCALE_USER_DEFAULT, &dispid);
+        if (FAILED(result))
+        {
+            Logger::warn(L"GetIDsOfNames(ShellExecute) failed. {}", GetErrorString(result));
+            return false;
+        }
+
+        VARIANTARG args[5];
+        args[0] = CComVariant(SW_SHOWNORMAL);
+        args[1] = CComVariant(L"");
+        args[2] = CComVariant(workingDir);
+        args[3] = CComVariant(pszParameters ? pszParameters : L"");
+        args[4] = CComVariant(pszFile);
+
+        DISPPARAMS params = { args, nullptr, 5, 0 };
+        result = spDispatch->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &params, nullptr, nullptr, nullptr);
+        if (FAILED(result))
+        {
+            Logger::warn(L"ShellExecute failed. {}", GetErrorString(result));
+            return false;
+        }
 
         return true;
     }

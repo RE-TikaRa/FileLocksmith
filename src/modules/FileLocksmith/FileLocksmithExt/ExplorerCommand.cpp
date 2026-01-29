@@ -9,6 +9,7 @@
 #include "FileLocksmithLib/Trace.h"
 
 #include <common/themes/icon_helpers.h>
+#include <common/utils/elevation.h>
 #include <common/utils/process_path.h>
 #include <common/utils/resources.h>
 
@@ -126,13 +127,15 @@ IFACEMETHODIMP ExplorerCommand::QueryContextMenu(HMENU hmenu, UINT indexMenu, UI
     HRESULT hr = E_UNEXPECTED;
     if (m_data_obj && !(uFlags & (CMF_DEFAULTONLY | CMF_VERBSONLY | CMF_OPTIMIZEFORINVOKE)))
     {
+        UINT added = 0;
+        UINT insertIndex = indexMenu;
+
         wchar_t menuName[128] = { 0 };
         wcscpy_s(menuName, ARRAYSIZE(menuName), context_menu_caption.c_str());
 
-        MENUITEMINFO mii;
+        MENUITEMINFO mii{};
         mii.cbSize = sizeof(MENUITEMINFO);
         mii.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_ID | MIIM_STATE;
-        mii.wID = idCmdFirst++;
         mii.fType = MFT_STRING;
         mii.dwTypeData = (PWSTR)menuName;
         mii.fState = MFS_ENABLED;
@@ -150,7 +153,8 @@ IFACEMETHODIMP ExplorerCommand::QueryContextMenu(HMENU hmenu, UINT indexMenu, UI
             DestroyIcon(hIcon);
         }
 
-        if (!InsertMenuItem(hmenu, indexMenu, TRUE, &mii))
+        mii.wID = idCmdFirst;
+        if (!InsertMenuItem(hmenu, insertIndex, TRUE, &mii))
         {
             m_etwTrace.UpdateState(true);
 
@@ -159,11 +163,33 @@ IFACEMETHODIMP ExplorerCommand::QueryContextMenu(HMENU hmenu, UINT indexMenu, UI
 
             m_etwTrace.Flush();
             m_etwTrace.UpdateState(false);
+            return hr;
         }
-        else
+
+        added++;
+        insertIndex++;
+
+        wchar_t adminMenuName[128] = { 0 };
+        wcscpy_s(adminMenuName, ARRAYSIZE(adminMenuName), admin_context_menu_caption.c_str());
+
+        MENUITEMINFO adminMii = mii;
+        adminMii.wID = idCmdFirst + 1;
+        adminMii.dwTypeData = (PWSTR)adminMenuName;
+
+        if (!InsertMenuItem(hmenu, insertIndex, TRUE, &adminMii))
         {
-            hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 1);
+            m_etwTrace.UpdateState(true);
+
+            hr = HRESULT_FROM_WIN32(GetLastError());
+            Trace::QueryContextMenuError(hr);
+
+            m_etwTrace.Flush();
+            m_etwTrace.UpdateState(false);
+            return hr;
         }
+
+        added++;
+        hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, added);
     }
 
     return hr;
@@ -176,9 +202,14 @@ IFACEMETHODIMP ExplorerCommand::InvokeCommand(CMINVOKECOMMANDINFO* pici)
     HRESULT hr = E_FAIL;
 
     if (FileLocksmithSettingsInstance().GetEnabled() &&
-        pici && (IS_INTRESOURCE(pici->lpVerb)) &&
-        (LOWORD(pici->lpVerb) == 0))
+        pici && (IS_INTRESOURCE(pici->lpVerb)))
     {
+        auto commandId = LOWORD(pici->lpVerb);
+        if (commandId != 0 && commandId != 1)
+        {
+            return E_FAIL;
+        }
+
         Trace::Invoked();
         ipc::Writer writer;
 
@@ -190,7 +221,11 @@ IFACEMETHODIMP ExplorerCommand::InvokeCommand(CMINVOKECOMMANDINFO* pici)
             return result;
         }
 
-        if (HRESULT result = LaunchUI(pici, &writer); FAILED(result))
+        HRESULT result = (commandId == 0)
+            ? LaunchUI(pici, &writer)
+            : LaunchUIElevated(pici, &writer);
+
+        if (FAILED(result))
         {
             Trace::InvokedRet(result);
             m_etwTrace.Flush();
@@ -256,6 +291,7 @@ ExplorerCommand::ExplorerCommand()
 {
     ++globals::ref_count;
     context_menu_caption = GET_RESOURCE_STRING_FALLBACK(IDS_FILELOCKSMITH_CONTEXT_MENU_ENTRY, L"Unlock with File Locksmith");
+    admin_context_menu_caption = GET_RESOURCE_STRING_FALLBACK(IDS_FILELOCKSMITH_CONTEXT_MENU_ENTRY_ADMIN, L"Unlock with File Locksmith (Admin)");
 }
 
 ExplorerCommand::~ExplorerCommand()
@@ -305,5 +341,22 @@ HRESULT ExplorerCommand::LaunchUI(CMINVOKECOMMANDINFO* pici, ipc::Writer* writer
     CloseHandle(processInformation.hProcess);
     CloseHandle(processInformation.hThread);
 
+    return S_OK;
+}
+
+HRESULT ExplorerCommand::LaunchUIElevated(CMINVOKECOMMANDINFO* pici, ipc::Writer* writer)
+{
+    // Compute exe path
+    std::wstring exe_path = get_module_folderpath(globals::instance);
+    exe_path += L'\\';
+    exe_path += constants::nonlocalizable::FileNameUIExe;
+
+    auto handle = run_elevated(exe_path, L"--elevated", get_module_folderpath(globals::instance).c_str());
+    if (!handle)
+    {
+        return E_FAIL;
+    }
+
+    CloseHandle(handle);
     return S_OK;
 }

@@ -184,8 +184,156 @@ private:
     std::wstring context_menu_caption = GET_RESOURCE_STRING_FALLBACK(IDS_FILE_LOCKSMITH_CONTEXT_MENU_ENTRY, L"Unlock with File Locksmith");
 };
 
+class __declspec(uuid("CF86870E-7B15-491C-A025-B95112EDADAC")) FileLocksmithContextMenuCommandElevated final : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IExplorerCommand, IObjectWithSite>
+{
+public:
+    virtual const wchar_t* Title() { return L"File Locksmith (Admin)"; }
+    virtual const EXPCMDFLAGS Flags() { return ECF_DEFAULT; }
+    virtual const EXPCMDSTATE State(_In_opt_ IShellItemArray* selection) { return ECS_ENABLED; }
+
+    // IExplorerCommand
+    IFACEMETHODIMP GetTitle(_In_opt_ IShellItemArray* items, _Outptr_result_nullonfailure_ PWSTR* name)
+    {
+        return SHStrDup(context_menu_caption.c_str(), name);
+    }
+
+    IFACEMETHODIMP GetIcon(_In_opt_ IShellItemArray*, _Outptr_result_nullonfailure_ PWSTR* icon)
+    {
+        std::wstring iconResourcePath = get_module_folderpath(g_hInst);
+        iconResourcePath += L"\\Assets\\FileLocksmith\\";
+        iconResourcePath += L"FileLocksmith.ico";
+        return SHStrDup(iconResourcePath.c_str(), icon);
+    }
+
+    IFACEMETHODIMP GetToolTip(_In_opt_ IShellItemArray*, _Outptr_result_nullonfailure_ PWSTR* infoTip)
+    {
+        *infoTip = nullptr;
+        return E_NOTIMPL;
+    }
+
+    IFACEMETHODIMP GetCanonicalName(_Out_ GUID* guidCommandName)
+    {
+        *guidCommandName = __uuidof(this);
+        return S_OK;
+    }
+
+    IFACEMETHODIMP GetState(_In_opt_ IShellItemArray* selection, _In_ BOOL okToBeSlow, _Out_ EXPCMDSTATE* cmdState)
+    {
+        *cmdState = ECS_ENABLED;
+
+        if (!FileLocksmithSettingsInstance().GetEnabled())
+        {
+            *cmdState = ECS_HIDDEN;
+        }
+
+        if (FileLocksmithSettingsInstance().GetShowInExtendedContextMenu())
+        {
+            *cmdState = ECS_HIDDEN;
+        }
+
+        return S_OK;
+    }
+
+    IFACEMETHODIMP Invoke(_In_opt_ IShellItemArray* selection, _In_opt_ IBindCtx*) noexcept
+    {
+        trace.UpdateState(true);
+
+        Trace::Invoked();
+        ipc::Writer writer;
+
+        if (selection == nullptr)
+        {
+            return S_OK;
+        }
+
+        if (HRESULT result = writer.start(); FAILED(result))
+        {
+            Trace::InvokedRet(result);
+
+            trace.Flush();
+            trace.UpdateState(false);
+            return result;
+        }
+
+        std::wstring path = get_module_folderpath(g_hInst);
+        path = path + L"\\PowerToys.FileLocksmithUI.exe";
+
+        HRESULT result;
+
+        auto handle = run_elevated(path.c_str(), L"--elevated", get_module_folderpath(g_hInst).c_str());
+        if (!handle)
+        {
+            result = E_FAIL;
+            Trace::InvokedRet(result);
+
+            trace.Flush();
+            trace.UpdateState(false);
+
+            return result;
+        }
+
+        CloseHandle(handle);
+
+        DWORD num_items;
+        selection->GetCount(&num_items);
+
+        for (DWORD i = 0; i < num_items; i++)
+        {
+            IShellItem* item;
+            result = selection->GetItemAt(i, &item);
+            if (SUCCEEDED(result))
+            {
+                LPWSTR file_path;
+                result = item->GetDisplayName(SIGDN_FILESYSPATH, &file_path);
+                if (SUCCEEDED(result))
+                {
+                    // TODO Aggregate items and send to UI
+                    writer.add_path(file_path);
+                    CoTaskMemFree(file_path);
+                }
+
+                item->Release();
+            }
+        }
+
+        Trace::InvokedRet(S_OK);
+
+        trace.Flush();
+        trace.UpdateState(false);
+
+        return S_OK;
+    }
+
+    IFACEMETHODIMP GetFlags(_Out_ EXPCMDFLAGS* flags)
+    {
+        *flags = Flags();
+        return S_OK;
+    }
+    IFACEMETHODIMP EnumSubCommands(_COM_Outptr_ IEnumExplorerCommand** enumCommands)
+    {
+        *enumCommands = nullptr;
+        return E_NOTIMPL;
+    }
+
+    // IObjectWithSite
+    IFACEMETHODIMP SetSite(_In_ IUnknown* site) noexcept
+    {
+        m_site = site;
+        return S_OK;
+    }
+    IFACEMETHODIMP GetSite(_In_ REFIID riid, _COM_Outptr_ void** site) noexcept { return m_site.CopyTo(riid, site); }
+
+protected:
+    ComPtr<IUnknown> m_site;
+
+private:
+    std::wstring context_menu_caption = GET_RESOURCE_STRING_FALLBACK(IDS_FILE_LOCKSMITH_CONTEXT_MENU_ENTRY_ADMIN, L"Unlock with File Locksmith (Admin)");
+};
+
 CoCreatableClass(FileLocksmithContextMenuCommand)
 CoCreatableClassWrlCreatorMapInclude(FileLocksmithContextMenuCommand)
+CoCreatableClass(FileLocksmithContextMenuCommandElevated)
+CoCreatableClassWrlCreatorMapInclude(FileLocksmithContextMenuCommandElevated)
 
 
 STDAPI DllGetActivationFactory(_In_ HSTRING activatableClassId, _COM_Outptr_ IActivationFactory** factory)

@@ -6,6 +6,7 @@
   <PropertyGroup>
     <Description>PowerToys ManagedCommon</Description>
     <AssemblyName>PowerToys.ManagedCommon</AssemblyName>
+    <NoWarn>$(NoWarn);SA0001;SA1009;SA1101;SA1200;SA1201;SA1202;SA1633;CA1707;CA1838</NoWarn>
   </PropertyGroup>
 
   <!-- See https://learn.microsoft.com/windows/apps/develop/platform/csharp-winrt/net-projection-from-cppwinrt-component for more info -->

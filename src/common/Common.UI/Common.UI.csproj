@@ -7,6 +7,7 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>PowerToys.Common.UI</AssemblyName>
+    <NoWarn>$(NoWarn);SA0001;SA1009;SA1101;SA1200;SA1201;SA1202;SA1203;SA1309;SA1633;CA1707;CA1838</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

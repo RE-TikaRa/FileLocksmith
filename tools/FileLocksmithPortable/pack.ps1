@@ -15,10 +15,11 @@ $outDir = Join-Path -Path $repoRoot -ChildPath (Join-Path 'artifacts\FileLocksmi
 
 if (!(Test-Path $winuiDir))
 {
-    throw ('未找到构建输出：{0}。请先构建 File Locksmith 相关项目。' -f $winuiDir)
+    throw ('Build output not found: {0}. Build File Locksmith first.' -f $winuiDir)
 }
 
 New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+Get-ChildItem -Path $outDir -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
 function Copy-IfExists {
     param(
@@ -33,131 +34,140 @@ function Copy-IfExists {
     return $false
 }
 
+function Copy-IfNotSame {
+    param(
+        [string]$Path,
+        [string]$Destination
+    )
+    if (!(Test-Path $Path))
+    {
+        return $false
+    }
+    $destPath = $Destination
+    if (Test-Path $Destination -PathType Container)
+    {
+        $destPath = Join-Path $Destination (Split-Path $Path -Leaf)
+    }
+    $sourceFull = [System.IO.Path]::GetFullPath($Path)
+    $destFull = [System.IO.Path]::GetFullPath($destPath)
+    if ($sourceFull -ieq $destFull)
+    {
+        return $false
+    }
+    Copy-Item -Path $Path -Destination $Destination -Force
+    return $true
+}
+
 function Copy-Glob {
     param(
-        [string]$SourceDir,
-        [string]$Pattern
+        [string]$Pattern,
+        [string]$Destination,
+        [switch]$Recurse
     )
-    Get-ChildItem -Path $SourceDir -Filter $Pattern -File -ErrorAction SilentlyContinue |
-        ForEach-Object { Copy-Item -Path $_.FullName -Destination $outDir -Force }
-}
-
-# UI 主程序与依赖
-Copy-IfExists (Join-Path $winuiDir 'PowerToys.FileLocksmithUI.exe') $outDir | Out-Null
-Copy-Glob $winuiDir 'PowerToys.FileLocksmithUI.*'
-Copy-Glob $winuiDir '*.pri'
-Copy-Glob $winuiDir '*.dll'
-Copy-Glob $winuiDir '*.json'
-
-# 运行时资源文件夹（XAML/MUI/WinUI 资源等）
-Get-ChildItem -Path $winuiDir -Directory -ErrorAction SilentlyContinue |
-    ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $outDir $_.Name) -Recurse -Force }
-
-# 右键菜单包
-Copy-IfExists (Join-Path $winuiDir 'FileLocksmithContextMenuPackage.msix') $outDir | Out-Null
-Copy-Glob $winuiDir 'PowerToys.FileLocksmithContextMenu*'
-Copy-Glob $winuiDir 'PowerToys.FileLocksmithExt*'
-Copy-Glob $winuiDir 'PowerToys.FileLocksmithLib.Interop*'
-
-# CLI
-$cliPath = Join-Path $binDir 'FileLocksmithCLI.exe'
-Copy-IfExists $cliPath $outDir | Out-Null
-
-# 资源
-$assetsSrc = Join-Path $winuiDir 'Assets\FileLocksmith'
-$assetsDst = Join-Path $outDir 'Assets\FileLocksmith'
-if (Test-Path $assetsSrc)
-{
-    New-Item -ItemType Directory -Path $assetsDst -Force | Out-Null
-    Copy-Item -Path $assetsSrc\* -Destination $assetsDst -Recurse -Force
-}
-
-# 注册/卸载脚本
-Copy-Item -Path (Join-Path $PSScriptRoot 'register.ps1') -Destination $outDir -Force
-Copy-Item -Path (Join-Path $PSScriptRoot 'unregister.ps1') -Destination $outDir -Force
-Copy-Item -Path (Join-Path $PSScriptRoot 'launch.cmd') -Destination $outDir -Force
-
-# 尝试复制 VC++ 运行库（若可用）
-function TryCopyVCRuntime {
-    param(
-        [string]$Platform
-    )
-    $possible = @()
-    if ($env:VCToolsRedistDir)
+    $items = Get-ChildItem -Path $Pattern -ErrorAction SilentlyContinue
+    if ($items)
     {
-        $possible += (Join-Path -Path $env:VCToolsRedistDir -ChildPath (Join-Path $Platform 'Microsoft.VC143.CRT'))
-        $possible += (Join-Path -Path $env:VCToolsRedistDir -ChildPath (Join-Path $Platform 'Microsoft.VC142.CRT'))
-    }
-    if ($env:VCINSTALLDIR)
-    {
-        $possible += (Join-Path -Path $env:VCINSTALLDIR -ChildPath 'Redist\MSVC')
-    }
-
-    $vsEditions = @('Community', 'Professional', 'Enterprise', 'BuildTools')
-    $vsVersions = @('2022', '2019')
-    $programFilesX86 = ${env:ProgramFiles(x86)}
-
-    foreach ($version in $vsVersions)
-    {
-        foreach ($edition in $vsEditions)
+        if ($Recurse)
         {
-            if ($env:ProgramFiles)
-            {
-                $possible += (Join-Path -Path $env:ProgramFiles -ChildPath ("Microsoft Visual Studio\\{0}\\{1}\\VC\\Redist\\MSVC" -f $version, $edition))
-            }
-            if ($programFilesX86)
-            {
-                $possible += (Join-Path -Path $programFilesX86 -ChildPath ("Microsoft Visual Studio\\{0}\\{1}\\VC\\Redist\\MSVC" -f $version, $edition))
-            }
+            Copy-Item -Path $items.FullName -Destination $Destination -Recurse -Force
         }
-    }
-
-    foreach ($p in $possible)
-    {
-        if (Test-Path $p)
+        else
         {
-            $crtDir = $p
-            if ((Get-Item $p).PSIsContainer -and (Split-Path $p -Leaf) -eq 'MSVC')
-            {
-                $crtDir = Get-ChildItem -Path $p -Directory |
-                    Sort-Object -Property Name -Descending |
-                    ForEach-Object { Join-Path -Path $_.FullName -ChildPath (Join-Path $Platform 'Microsoft.VC143.CRT') } |
-                    Where-Object { Test-Path $_ } |
-                    Select-Object -First 1
-            }
-
-            if ($crtDir -and (Test-Path $crtDir))
-            {
-                Get-ChildItem -Path $crtDir -Filter '*.dll' -File |
-                    ForEach-Object { Copy-Item -Path $_.FullName -Destination $outDir -Force }
-                return $true
-            }
+            Copy-Item -Path $items.FullName -Destination $Destination -Force
         }
+        return $true
     }
-
-    Write-Warning '未能定位 VC++ 运行库目录。若目标机器没有安装 VC++ 运行库，可能会导致无法启动。'
     return $false
 }
 
-TryCopyVCRuntime -Platform $Platform | Out-Null
+function Find-First {
+    param(
+        [string]$Root,
+        [string]$Filter
+    )
+    $item = Get-ChildItem -Path $Root -Filter $Filter -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($item)
+    {
+        return $item.FullName
+    }
+    return $null
+}
+
+Write-Host 'Copy UI output...'
+Copy-Item -Path (Join-Path $winuiDir '*') -Destination $outDir -Recurse -Force
+
+Write-Host 'Copy CLI...'
+if (-not (Copy-IfExists (Join-Path $binDir 'FileLocksmithCLI.exe') $outDir))
+{
+    Write-Warning 'FileLocksmithCLI.exe not found.'
+}
+Copy-IfExists (Join-Path $binDir 'FileLocksmithCLI.pdb') $outDir | Out-Null
+
+Write-Host 'Copy shell extension...'
+$extPath = Join-Path $binDir 'PowerToys.FileLocksmithExt.dll'
+if (!(Test-Path $extPath))
+{
+    $extPath = Join-Path $binDir 'FileLocksmithExt.dll'
+}
+if (!(Test-Path $extPath))
+{
+    $extPath = Find-First $repoRoot 'PowerToys.FileLocksmithExt.dll'
+}
+if ($extPath)
+{
+    Copy-IfNotSame -Path $extPath -Destination $outDir | Out-Null
+}
+else
+{
+    Write-Warning 'PowerToys.FileLocksmithExt.dll not found.'
+}
+
+Write-Host 'Copy context menu package...'
+$msixPath = Find-First $repoRoot 'FileLocksmithContextMenuPackage*.msix'
+if ($msixPath)
+{
+    Copy-IfNotSame -Path $msixPath -Destination $outDir | Out-Null
+}
+else
+{
+    Write-Warning 'FileLocksmithContextMenuPackage.msix not found.'
+}
+
+Write-Host 'Copy extra tools...'
+Copy-IfExists (Join-Path $binDir 'PowerToys.Interop.dll') $outDir | Out-Null
+Copy-IfExists (Join-Path $binDir 'PowerToys.Interop.winmd') $outDir | Out-Null
+Copy-IfExists (Join-Path $PSScriptRoot 'register.ps1') $outDir | Out-Null
+Copy-IfExists (Join-Path $PSScriptRoot 'unregister.ps1') $outDir | Out-Null
+Copy-IfExists (Join-Path $PSScriptRoot 'launch.cmd') $outDir | Out-Null
 
 if ($IncludeVCLibs)
 {
-    $arch = if ($Platform -eq 'ARM64') { 'arm64' } else { 'x64' }
+    Write-Host 'Prepare VCLibs...'
     $vclibsDir = Join-Path $outDir 'VCLibs'
-    $vclibsPath = Join-Path -Path $vclibsDir -ChildPath ('Microsoft.VCLibs.{0}.14.00.Desktop.appx' -f $arch)
-    if (!(Test-Path $vclibsPath))
+    New-Item -ItemType Directory -Path $vclibsDir -Force | Out-Null
+    $arch = if ($Platform -eq 'ARM64') { 'arm64' } else { 'x64' }
+    $vclibsName = "Microsoft.VCLibs.$arch.14.00.Desktop.appx"
+    $targetVclibs = Join-Path $vclibsDir $vclibsName
+    if (!(Test-Path $targetVclibs))
     {
-        New-Item -ItemType Directory -Path $vclibsDir -Force | Out-Null
-        try
+        $existing = Find-First $repoRoot $vclibsName
+        if ($existing)
         {
-            Invoke-WebRequest -Uri ('https://aka.ms/Microsoft.VCLibs.{0}.14.00.Desktop.appx' -f $arch) -OutFile $vclibsPath
+            Copy-Item -Path $existing -Destination $targetVclibs -Force
         }
-        catch
+        else
         {
-            Write-Warning '未能下载 Microsoft.VCLibs 依赖。若目标机器缺少该依赖，右键菜单包可能无法注册。'
+            try
+            {
+                $url = "https://aka.ms/Microsoft.VCLibs.$arch.14.00.Desktop.appx"
+                Invoke-WebRequest -Uri $url -OutFile $targetVclibs
+            }
+            catch
+            {
+                Write-Warning ("VCLibs download failed: {0}" -f $_.Exception.Message)
+            }
         }
     }
 }
 
-Write-Host ('已打包到：{0}' -f $outDir)
+Write-Host ('Packed to: {0}' -f $outDir)

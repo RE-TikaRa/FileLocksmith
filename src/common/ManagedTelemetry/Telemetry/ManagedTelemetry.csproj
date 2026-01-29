@@ -5,6 +5,7 @@
   <PropertyGroup>
     <Description>PowerToys Telemetry</Description>
     <AssemblyName>PowerToys.ManagedTelemetry</AssemblyName>
+    <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

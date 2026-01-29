@@ -1,13 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation
-// The Microsoft Corporation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
-using Microsoft.PowerToys.Telemetry.Events;
+﻿// <copyright file="PowerToysTelemetry.cs" company="Microsoft Corporation">
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// </copyright>
 
 namespace Microsoft.PowerToys.Telemetry
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Tracing;
+    using Microsoft.PowerToys.Telemetry.Events;
+
     /// <summary>
     /// Telemetry helper class for PowerToys.
     /// </summary>

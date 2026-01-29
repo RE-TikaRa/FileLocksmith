@@ -37,9 +37,11 @@
           <desktop4:FileExplorerContextMenus>
             <desktop5:ItemType Type="Directory">
               <desktop5:Verb Id="FileLocksmithCommand" Clsid="AAF1E27D-4976-49C2-8895-AAFA743C0A7E" />
+              <desktop5:Verb Id="FileLocksmithCommandElevated" Clsid="CF86870E-7B15-491C-A025-B95112EDADAC" />
             </desktop5:ItemType>
             <desktop5:ItemType Type="*">
               <desktop5:Verb Id="FileLocksmithCommand" Clsid="AAF1E27D-4976-49C2-8895-AAFA743C0A7E" />
+              <desktop5:Verb Id="FileLocksmithCommandElevated" Clsid="CF86870E-7B15-491C-A025-B95112EDADAC" />
             </desktop5:ItemType>
           </desktop4:FileExplorerContextMenus>
         </desktop4:Extension>
@@ -47,6 +49,7 @@
           <com:ComServer>
             <com:SurrogateServer DisplayName="Context menu verb handler">
               <com:Class Id="AAF1E27D-4976-49C2-8895-AAFA743C0A7E" Path="PowerToys.FileLocksmithContextMenu.dll" ThreadingModel="STA"/>
+              <com:Class Id="CF86870E-7B15-491C-A025-B95112EDADAC" Path="PowerToys.FileLocksmithContextMenu.dll" ThreadingModel="STA"/>
             </com:SurrogateServer>
           </com:ComServer>
         </com:Extension>

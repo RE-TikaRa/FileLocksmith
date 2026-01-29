@@ -124,6 +124,10 @@
     <value>Unlock with File Locksmith</value>
     <comment>This text will be shown when the user opens the context menu (right clicks) a file. File Locksmith is the product name, do not loc.</comment>
   </data>
+  <data name="File_Locksmith_Context_Menu_Entry_Admin" xml:space="preserve">
+    <value>Unlock with File Locksmith (Admin)</value>
+    <comment>Context menu entry for elevated launch.</comment>
+  </data>
   <data name="File_Locksmith_App_Name" xml:space="preserve">
     <value>File Locksmith</value>
   </data>

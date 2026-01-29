@@ -1,15 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation
-// The Microsoft Corporation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿// <copyright file="TelemetryBase.cs" company="Microsoft Corporation">
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// </copyright>
 
-using System.Diagnostics.Tracing;
-
-// WARNING: THIS FILE GETS REPLACED ON THE BUILD FARM
 namespace Microsoft.PowerToys.Telemetry
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Tracing;
+
+    // WARNING: THIS FILE GETS REPLACED ON THE BUILD FARM
     /// <summary>
     /// Privacy Tag values
     /// </summary>
+    [SuppressMessage("Naming", "CA1707:Remove underscores from member name", Justification = "Telemetry schema requires underscores.")]
     public enum PartA_PrivTags
            : ulong
     {
