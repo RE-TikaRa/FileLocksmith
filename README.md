@@ -1,8 +1,35 @@
 # File Locksmith（单工具版）
 
 File Locksmith 是用于定位并解除文件/文件夹占用的工具。
-本项目从 PowerToys 0.97.1 的 File Locksmith 拆分而来，保留右键菜单体验，并新增管理主界面。
+
+## 项目信息
+
+原始项目仓库：https://github.com/microsoft/PowerToys
+本项目从 PowerToys 0.97.1 的 File Locksmith 拆分而来，保留右键菜单体验并新增管理主界面，形成单工具版本。
 仅在 Windows 11 24H2 26100.7623 环境下完成验证。
+
+## 依赖说明
+
+> 已做依赖本地化处理，但测试覆盖有限，仍可能存在未覆盖场景。
+
+**构建环境**
+- Windows 11 + Visual Studio 2022（Build Tools 或 Professional，含 C++ 工具集与 MSBuild）
+- .NET SDK 9（TargetFramework: `net9.0-windows10.0.26100.0`）
+- Windows 11 SDK（WindowsSdkPackageVersion: `10.0.26100.68-preview`）
+- PowerShell 5+（便携包脚本）
+
+**核心依赖（NuGet/源码）**
+- Windows App SDK `1.8.251106002`
+- C#/WinRT `Microsoft.Windows.CsWinRT 2.2.0`
+- C++/WinRT `Microsoft.Windows.CppWinRT 2.0.240111.5`
+- WIL `Microsoft.Windows.ImplementationLibrary 1.0.231216.1`
+- UI 组件：CommunityToolkit.WinUI.*、WinUIEx
+- C++ 依赖（仓库内置）：`deps/spdlog`、`deps/expected-lite`
+
+**运行时依赖**
+- Windows App SDK Runtime（便携包内会自带）
+- VC++ 运行库（便携包脚本会尝试复制）
+- WebView2 Runtime（WinUI WebView2）
 
 ## 界面预览
 
@@ -151,12 +178,7 @@ powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -P
 - `src/common/Telemetry/README.md`：Telemetry 采集说明（排查/性能）
 - `src/common/CalculatorEngineCommon/README.md`：exprtk 封装说明（共享库）
 - `deps/spdlog/README.md`：第三方日志依赖说明
-- 同目录下 `*.Original.md` 为上游/历史说明备份（即PowerToys官方代码说明）
-
-## 依赖说明
-
-- Windows App SDK 运行时可随包带上
-- VC++ 运行库可随包带上（pack 脚本已尝试自动复制）
+- 同目录下 `*.Original.md` 为上游/历史说明备份（PowerToys 官方说明）
 
 ## 作者与信息
 
@@ -170,5 +192,5 @@ powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -P
 
 ## 免责声明
 
-本项目为开源研究与学习用途的软件分支，按“现状”提供，不对适用性、稳定性或特定用途做任何保证。  
+本项目为开源研究与学习用途的软件分支，按“现状”提供，不对适用性、稳定性或特定用途做任何保证。
 使用本项目进行文件占用解除、进程终止、右键菜单注册/卸载等操作可能影响系统或数据，请自行确认风险并对操作结果负责。
