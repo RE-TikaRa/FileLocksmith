@@ -3,15 +3,26 @@ param(
     [string]$Platform = 'x64',
     [ValidateSet('Debug','Release')]
     [string]$Configuration = 'Release',
-    [switch]$IncludeVCLibs = $true
+    [ValidateSet('Portable','System')]
+    [string]$Mode = 'Portable',
+    [bool]$IncludeVCLibs = $true
 )
 
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$winuiDir = Join-Path -Path $repoRoot -ChildPath (Join-Path $Platform (Join-Path $Configuration 'WinUI3Apps'))
+$winuiFolderName = if ($Mode -eq 'Portable') { 'WinUI3Apps' } else { 'WinUI3Apps.System' }
+$winuiDir = Join-Path -Path $repoRoot -ChildPath (Join-Path $Platform (Join-Path $Configuration $winuiFolderName))
 $binDir = Join-Path -Path $repoRoot -ChildPath (Join-Path $Platform $Configuration)
-$outDir = Join-Path -Path $repoRoot -ChildPath (Join-Path 'artifacts\FileLocksmithPortable' (Join-Path $Platform $Configuration))
+$outName = if ($Mode -eq 'Portable') { 'FileLocksmith Portable version' } else { 'FileLocksmith System dependency versions' }
+$outDir = Join-Path -Path $repoRoot -ChildPath (Join-Path 'artifacts' (Join-Path $outName (Join-Path $Platform $Configuration)))
+
+if (-not $PSBoundParameters.ContainsKey('IncludeVCLibs'))
+{
+    $IncludeVCLibs = ($Mode -eq 'Portable')
+}
+
+Write-Host ('Pack mode: {0}' -f $Mode)
 
 if (!(Test-Path $winuiDir))
 {

@@ -8,6 +8,20 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 - 拆分自 PowerToys 0.97.1 的 File Locksmith
 - 目标环境：Windows 11 24H2 26100.7623
 
+## 下载
+
+**方式一：下载发布包（推荐）**  
+Releases：https://github.com/RE-TikaRa/FileLocksmith/releases
+- `FileLocksmith Portable version`：自带依赖，开箱即用，体积更大  
+- `FileLocksmith System dependency versions`：不带运行库，体积更小，需要系统已安装依赖  
+  - 依赖：Windows App SDK Runtime、VC++ 运行库、WebView2 Runtime
+
+**方式二：获取源码**  
+用于自行构建或二次开发：
+```
+git clone https://github.com/RE-TikaRa/FileLocksmith.git
+```
+
 ## 界面预览
 
 **首页**
@@ -129,15 +143,17 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 **输出目录**
 - UI：`x64/Release/WinUI3Apps`
 - CLI：`x64/Release/FileLocksmithCLI.exe`
-- 便携包：`artifacts/FileLocksmithPortable/x64/Release`
+- 便携包（自带依赖）：`artifacts/FileLocksmith Portable version/x64/Release`
+- 便携包（系统依赖）：`artifacts/FileLocksmith System dependency versions/x64/Release`
 
 **快捷脚本**
 - 仅构建 UI：`build_project.bat`
-- 构建 + 便携版打包：`build_and_pack.bat`
+- 构建 + 便携版打包：`build_and_pack.bat`（输出 Portable/System 两个版本）
 
 **清理缓存（推荐在重新构建前执行）**
 - 删除 `x64/`
-- 删除 `artifacts/FileLocksmithPortable/`
+- 删除 `artifacts/FileLocksmith Portable version/`
+- 删除 `artifacts/FileLocksmith System dependency versions/`
 - 删除 `src/**/bin` 与 `src/**/obj`
 - 删除旧版日志子目录 `Logs\\<版本>`（如果仍存在）
 
@@ -169,12 +185,15 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 ## 便携包
 
 ```
-powershell -ExecutionPolicy Bypass -File tools\\FileLocksmithPortable\\pack.ps1 -Platform x64 -Configuration Release
+powershell -ExecutionPolicy Bypass -File tools\\FileLocksmithPortable\\pack.ps1 -Platform x64 -Configuration Release -Mode Portable
+powershell -ExecutionPolicy Bypass -File tools\\FileLocksmithPortable\\pack.ps1 -Platform x64 -Configuration Release -Mode System
 ```
 
 **便携版构建/打包常见问题**
 - **输出目录为空**：`pack.ps1` 依赖 `x64/Release/WinUI3Apps`。请先构建 UI，再打包。
+- **System 模式找不到 WinUI3Apps.System**：请先执行 `build_and_pack.bat` 或用相同参数构建 System 版本 UI。
 - **便携版点击关于/设置闪退（MUI 资源缺失）**：若输出目录缺少 `FileLocksmithXAML`、`Assets` 或语言目录（如 `zh-CN`），WinUI 资源加载会崩溃。`pack.ps1` 已改为复制 `WinUI3Apps` 下所有子目录，若仍异常请重新构建并打包。
+- **System dependency versions 启动失败**：请确认系统已安装 Windows App SDK Runtime、VC++ 运行库与 WebView2 Runtime。
 
 ## 其他文档
 

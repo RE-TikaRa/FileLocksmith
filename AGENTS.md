@@ -15,22 +15,25 @@
 ## 输出目录
 - UI 输出：`x64/Release/WinUI3Apps/`
 - CLI 输出：`x64/Release/FileLocksmithCLI.exe`
-- 便携包输出：`artifacts/FileLocksmithPortable/x64/Release/`
+- 便携包输出（自带依赖）：`artifacts/FileLocksmith Portable version/x64/Release/`
+- 便携包输出（系统依赖）：`artifacts/FileLocksmith System dependency versions/x64/Release/`
 
 ## 构建、测试与开发命令
 - 仅构建 UI：`build_project.bat`
-- 构建 + 便携版打包：`build_and_pack.bat`
+- 构建 + 便携版打包：`build_and_pack.bat`（同时输出 Portable/System 两种）
 - 生成便携包：`tools/FileLocksmithPortable/pack.ps1`
 - 需要完整构建时，优先使用 VS 2022 + MSBuild 调用各 `.csproj/.vcxproj`
 
 ## 清理缓存（重建前建议）
 - 删除 `x64/`
-- 删除 `artifacts/FileLocksmithPortable/`
+- 删除 `artifacts/FileLocksmith Portable version/`
+- 删除 `artifacts/FileLocksmith System dependency versions/`
 - 删除 `src/**/bin` 与 `src/**/obj`
 - 删除旧版日志子目录 `Logs\\<版本>`（若存在）
 
 ## 便携包注意事项
 - `pack.ps1` 依赖 `x64/Release/WinUI3Apps` 产物
+- System 模式使用 `x64/Release/WinUI3Apps.System` 产物
 - 便携包需包含 `WinUI3Apps` 下的全部资源目录（含语言包），否则页面切换可能崩溃
 - `register.ps1` / `unregister.ps1` 可能需要管理员权限
 

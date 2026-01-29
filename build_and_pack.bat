@@ -14,13 +14,19 @@ if "%VSINSTALL%"=="" goto :msbuild_install_missing
 set "MSBUILD=%VSINSTALL%\MSBuild\Current\Bin\MSBuild.exe"
 if not exist "%MSBUILD%" goto :msbuild_missing
 
-"%MSBUILD%" src\modules\FileLocksmith\FileLocksmithUI\FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64 /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
+"%MSBUILD%" src\modules\FileLocksmith\FileLocksmithUI\FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64 /p:WindowsAppSDKSelfContained=true /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
+if errorlevel 1 exit /b 1
+
+"%MSBUILD%" src\modules\FileLocksmith\FileLocksmithUI\FileLocksmithUI.csproj /p:Configuration=Release /p:Platform=x64 /p:WindowsAppSDKSelfContained=false /p:OutputPath=..\\..\\..\\..\\x64\\Release\\WinUI3Apps.System /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
 if errorlevel 1 exit /b 1
 
 "%MSBUILD%" src\modules\FileLocksmith\FileLocksmithCLI\FileLocksmithCLI.vcxproj /p:Configuration=Release /p:Platform=x64
 if errorlevel 1 exit /b 1
 
-pwsh -NoProfile -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -Mode Portable
+if errorlevel 1 exit /b 1
+
+pwsh -NoProfile -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -Mode System
 if errorlevel 1 exit /b 1
 
 popd
