@@ -1,6 +1,8 @@
 # File Locksmith（单工具版）
 
-File Locksmith 是一个用于定位并解除文件/文件夹占用的工具。本项目为从 PowerToys 中分离出的单工具版本，保留原有右键菜单体验，同时新增管理主界面。仅在 Windows 11 24H2 26100.7623 环境下完成验证。
+File Locksmith 是用于定位并解除文件/文件夹占用的工具。
+本项目从 PowerToys 0.97.1 的 File Locksmith 拆分而来，保留右键菜单体验，并新增管理主界面。
+仅在 Windows 11 24H2 26100.7623 环境下完成验证。
 
 ## 功能概览
 
@@ -39,7 +41,7 @@ File Locksmith 是一个用于定位并解除文件/文件夹占用的工具。�
 管理员可通过策略强制启用/禁用：
 
 `HKLM\Software\Policies\FileLocksmith`
-- `Enabled`（DWORD）：`1` 启用，`0` 禁用  
+- `Enabled`（DWORD）：`1` 启用，`0` 禁用
 若存在该键值，将覆盖本地设置。
 
 ## 注册表标记（状态）
@@ -78,18 +80,22 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 - `tools/FileLocksmithPortable`
   - 便携版打包脚本
 
-## 构建说明
+## 构建与打包
 
-项目使用 WinUI 3 + Windows App SDK（.NET 9 目标）。构建输出默认位于：
+项目使用 WinUI 3 + Windows App SDK（.NET 9 目标）。
 
-- `x64/Release/WinUI3Apps`
+**输出目录**
+- UI：`x64/Release/WinUI3Apps`
+- CLI：`x64/Release/FileLocksmithCLI.exe`
+- 便携包：`artifacts/FileLocksmithPortable/x64/Release`
 
 **快捷脚本**
 - 仅构建 UI：`build_project.bat`
 - 构建 + 便携版打包：`build_and_pack.bat`
 
 **清理缓存（推荐在重新构建前执行）**
-- 删除 `x64/`、`artifacts/FileLocksmithPortable/`
+- 删除 `x64/`
+- 删除 `artifacts/FileLocksmithPortable/`
 - 删除 `src/**/bin` 与 `src/**/obj`
 - 删除旧版日志子目录 `Logs\<版本>`（如果仍存在）
 
@@ -127,6 +133,14 @@ powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -P
 **便携版构建/打包常见问题**
 - **输出目录为空**：`pack.ps1` 依赖 `x64/Release/WinUI3Apps`。请先构建 UI，再打包。
 - **便携版点击关于/设置闪退（MUI 资源缺失）**：若输出目录缺少 `FileLocksmithXAML`、`Assets` 或语言目录（如 `zh-CN`），WinUI 资源加载会崩溃。`pack.ps1` 已改为复制 `WinUI3Apps` 下所有子目录，若仍异常请重新构建并打包。
+
+## 其他文档
+
+- `tools/FileLocksmithPortable/README.md`：便携版打包与使用说明
+- `src/common/Telemetry/README.md`：Telemetry 采集说明（排查/性能）
+- `src/common/CalculatorEngineCommon/README.md`：exprtk 封装说明（共享库）
+- `deps/spdlog/README.md`：第三方日志依赖说明
+- 同目录下 `*.Original.md` 为上游/历史说明备份（即PowerToys官方代码说明）
 
 ## 依赖说明
 

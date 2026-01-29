@@ -1,25 +1,11 @@
+# Telemetry（共享）
 
-# Overview
+该目录为 PowerToys 的 Telemetry 采集相关内容，保留用于问题定位与性能分析。
 
-Telemetry from the PowerToys provider can be captured using the PowerToys.wprp file and WPR.
+## 快速使用
+- 启动采集：`wpr.exe -start "PowerToys.wprp"`
+- 停止采集：`wpr.exe -Stop "Trace.etl"`
+- 使用 WPA 打开 `Trace.etl` 查看事件。
 
-## Starting trace capture
-
-To capture a trace for the PowerToys provider, run the following:
-
-`wpr.exe -start "PowerToys.wprp"`
-
-## Stopping trace capture
-
-To capture a trace for the PowerToys provider, run the following:
-
-`wpr.exe -Stop "Trace.etl"`
-
-## Viewing Events
-
-Open the trace.etl file in WPA.
-
-## Additional Resources
-[Tracelogging on Microsoft Learn](https://learn.microsoft.com/windows/win32/tracelogging/trace-logging-portal)
-
-[Recording and Viewing Events](https://learn.microsoft.com/windows/win32/tracelogging/tracelogging-record-and-display-tracelogging-events)
+## 原始说明
+- 旧版说明已保留在 `readme.Original.md`。

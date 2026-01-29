@@ -10,14 +10,20 @@
   - `FileLocksmithCLI/` 命令行入口与单元测试。
 - `src/common/` 为共享库与通用工具。
 - `tools/FileLocksmithPortable/` 为便携版打包脚本。
-- `x64/Release/WinUI3Apps/` 为 UI 默认输出目录。
 
 ## 构建、测试与开发命令
-- 构建 UI（Release x64）：
-  - `MSBuild.exe src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /p:Configuration=Release /p:Platform=x64`
+- 仅构建 UI：`build_project.bat`
+- 构建 + 便携版打包：`build_and_pack.bat`
+- 手动构建 UI（Release x64）：
+  - `MSBuild.exe src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64`
 - 构建 CLI 与原生项目：使用 Visual Studio 2022 打开对应 `.vcxproj`，选择 x64 配置构建。
 - 生成便携包：
   - `tools/FileLocksmithPortable/pack.ps1`（PowerShell 脚本，可能需要管理员权限）。
+
+## 输出目录
+- UI 默认输出：`x64/Release/WinUI3Apps/`
+- CLI 输出：`x64/Release/FileLocksmithCLI.exe`
+- 便携包输出：`artifacts/FileLocksmithPortable/x64/Release/`
 
 ## 编码风格与命名约定
 - 延续现有风格：C++ 头/源文件成对，类型 `PascalCase`，局部变量 `camelCase`。
@@ -36,4 +42,4 @@
 
 ## 安全与配置提示
 - 项目在 Windows 11 24H2 上验证通过；右键菜单注册/卸载可能需要提权。
-- 便携包可携带 Windows App SDK 与 VC++ 运行库，打包后请检查 `x64/Release` 输出。
+- 便携包需要包含 WinUI3Apps 的资源目录（含语言包），否则可能触发页面打开崩溃。

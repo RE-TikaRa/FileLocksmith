@@ -1,29 +1,11 @@
-# C++/WinRT CalculatorEngine Project Overview
+# CalculatorEngineCommon（共享库）
 
-This project wraps the exprtk expression parsing library with a C++/WinRT component,  
-making advanced mathematical evaluation capabilities available to Windows applications.  
-It is designed specifically to provide calculation support for the CmdPal calculator extension.
+该模块来自 PowerToys，封装了 exprtk 表达式解析能力。
+在 File Locksmith 中一般不需要改动此模块，保留用于与上游结构保持一致。
 
-## Using exprtk
+## 更新 exprtk
+- 替换项目内的 `exprtk.hpp`
+- 重新构建相关工程
 
-This project uses [exprtk](https://github.com/ArashPartow/exprtk) as the 
-expression parsing and evaluation engine.
-
-How to use exprtk in this project:
-- The exprtk header file (`exprtk.hpp`) is included in the project source.
-- You can use exprtk to parse and evaluate mathematical expressions in your 
-  C++ code. For example:
-
-    ```cpp
-    #include "exprtk.hpp"
-    exprtk::expression<double> expression;
-    exprtk::parser<double> parser;
-    std::string formula = "3 + 4 * 2";
-    parser.compile(formula, expression);
-    double result = expression.value();
-    ```
-
-How to update exprtk:
-1. Download the latest `exprtk.hpp` from the [official repository](https://github.com/ArashPartow/exprtk).
-2. Replace the existing `exprtk.hpp` file in the project with the new version.
-3. Rebuild the project to ensure compatibility and take advantage of any updates.
+## 原始说明
+- 旧版说明已保留在 `readme.Original.md`。
