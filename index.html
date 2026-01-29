@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>File Locksmith - 文件占用解除工具</title>
+  <meta name="description" content="File Locksmith 是用于定位并解除文件/文件夹占用的 Windows 工具，拆分自 PowerToys 0.97.1，专注 Win11 24H2。" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="assets/PowerToys.FileLocksmithUI_g0_256x256_32bpp.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到内容</a>
+  <div class="bg-atmosphere" aria-hidden="true">
+    <div class="bg-mesh"></div>
+    <div class="bg-dots"></div>
+    <div class="bg-dots-2"></div>
+    <div class="glow-orb glow-orb--a"></div>
+    <div class="glow-orb glow-orb--b"></div>
+    <div class="noise"></div>
+  </div>
+  <header class="site-header" id="top">
+    <div class="container header-inner nav-shell">
+      <a class="brand" href="#top">
+        <span class="brand-logos">
+          <img class="product-logo" src="assets/PowerToys.FileLocksmithUI_g0_128x128_32bpp.png" alt="File Locksmith 图标" />
+        </span>
+        <div>
+          <strong>File Locksmith</strong>
+          <span class="brand-meta">专注 · 轻量 · 开源</span>
+        </div>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#top">首页</a>
+        <a href="#features">功能</a>
+        <a href="#workflow">流程</a>
+        <a href="#download">下载</a>
+        <a href="#docs">文档</a>
+        <a href="#usage">使用</a>
+        <a href="#build">构建</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="header-cta">
+        <a class="btn ghost" href="https://github.com/RE-TikaRa/FileLocksmith">GitHub</a>
+        <a class="btn primary" href="https://github.com/RE-TikaRa/FileLocksmith/releases">下载 Release</a>
+        <button class="btn ghost theme-toggle" type="button" id="theme-toggle" aria-label="主题：自动" data-mode="system">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 1 0 9.8 9.8z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+          </svg>
+          <span class="theme-label">自动</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main id="content">
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="reveal" data-reveal>
+          <span class="tag">专注 · 轻量 · 开源</span>
+          <p class="eyebrow">开源文件占用解除工具</p>
+          <h1 class="hero-title">让占用一眼可见，把<span class="text-gradient">解锁</span>变成一步</h1>
+          <p class="lead">
+            File Locksmith 拆分自 PowerToys 0.97.1，面向 Win11 24H2。
+            <strong>右键菜单、管理界面与 CLI</strong> 三种入口让定位与解除更直接。
+          </p>
+          <div class="cta-row">
+            <a class="btn primary" href="https://github.com/RE-TikaRa/FileLocksmith/releases">立即下载</a>
+            <a class="btn ghost" href="https://re-tikara.fun/Blog/posts/5d98e7ac/">项目文档</a>
+            <a class="btn ghost" href="https://github.com/RE-TikaRa/FileLocksmith">查看源码</a>
+          </div>
+          <div class="hero-metrics">
+            <div class="metric">
+              <span>轻量</span>
+              <strong>秒开即用</strong>
+            </div>
+            <div class="metric">
+              <span>清晰</span>
+              <strong>进程可见</strong>
+            </div>
+            <div class="metric">
+              <span>开源</span>
+              <strong>自由扩展</strong>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel hero-media reveal" data-reveal>
+          <div class="hero-chips">
+            <span class="hero-chip">Win11 24H2</span>
+            <span class="hero-chip">WinUI 3</span>
+            <span class="hero-chip">CLI Ready</span>
+          </div>
+          <p class="eyebrow">扫描模式</p>
+          <p class="subtle">清晰列表 · 直接处理</p>
+          <img src="https://s2.loli.net/2026/01/29/OuPSVzb8dCiMTa4.png" alt="File Locksmith 主界面预览" loading="lazy" />
+          <p class="hero-caption">管理与扫描一体化界面，入口与状态一屏掌控。</p>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Features</p>
+            <h2 class="section-title">功能亮点</h2>
+          </div>
+          <p class="section-subtitle">更顺滑的解锁流程，简洁只是表象，效率才是核心。</p>
+        </div>
+        <div class="feature-list">
+          <article class="feature-item reveal" data-reveal>
+            <div class="feature-text">
+              <div class="feature-num">01</div>
+              <h3>右键直达与占用扫描</h3>
+              <p>从资源管理器直接进入扫描界面，清楚显示占用进程与文件列表。</p>
+              <div class="feature-tags">
+                <span>右键菜单</span>
+                <span>占用列表</span>
+                <span>结束进程</span>
+              </div>
+            </div>
+            <div class="feature-media">
+              <img src="https://s2.loli.net/2026/01/29/OuPSVzb8dCiMTa4.png" alt="扫描界面预览" loading="lazy" />
+            </div>
+          </article>
+          <article class="feature-item reverse reveal" data-reveal>
+            <div class="feature-text">
+              <div class="feature-num">02</div>
+              <h3>显示方式与策略控制</h3>
+              <p>支持仅扩展菜单显示，结合策略键值实现统一管控与注册状态管理。</p>
+              <div class="feature-tags">
+                <span>扩展菜单</span>
+                <span>策略控制</span>
+                <span>注册状态</span>
+              </div>
+            </div>
+            <div class="feature-media">
+              <img src="https://s2.loli.net/2026/01/29/2HFNnK9el8x6wI5.png" alt="设置界面预览" loading="lazy" />
+            </div>
+          </article>
+          <article class="feature-item reveal" data-reveal>
+            <div class="feature-text">
+              <div class="feature-num">03</div>
+              <h3>版本信息与维护入口</h3>
+              <p>关于页面集中展示版本与来源，保持信息清晰可追溯。</p>
+              <div class="feature-tags">
+                <span>关于页</span>
+                <span>版本信息</span>
+                <span>来源追溯</span>
+              </div>
+            </div>
+            <div class="feature-media">
+              <img src="https://s2.loli.net/2026/01/29/NzBGtx9fDlRy1JY.png" alt="关于页面预览" loading="lazy" />
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section section-tint" id="workflow">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Workflow</p>
+            <h2 class="section-title">三步完成解锁</h2>
+          </div>
+          <p class="section-subtitle">从定位到结束进程，全流程保持可视与可控。</p>
+        </div>
+        <div class="workflow-grid">
+          <article class="workflow-card reveal" data-reveal>
+            <div class="workflow-index">01</div>
+            <h3>右键定位</h3>
+            <p>在资源管理器选中文件或目录，直接调用 File Locksmith。</p>
+          </article>
+          <article class="workflow-card reveal" data-reveal>
+            <div class="workflow-index">02</div>
+            <h3>查看占用</h3>
+            <p>扫描界面列出占用进程与文件路径，定位问题来源。</p>
+          </article>
+          <article class="workflow-card reveal" data-reveal>
+            <div class="workflow-index">03</div>
+            <h3>结束进程</h3>
+            <p>对选定进程执行结束操作，快速释放文件占用。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="download">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Download</p>
+            <h2 class="section-title">下载与依赖</h2>
+          </div>
+          <p class="section-subtitle">发布包提供两种模式，按场景选择。推荐优先下载便携版。</p>
+        </div>
+        <div class="download-grid">
+          <article class="card download-card highlight reveal" data-reveal>
+            <h3>Portable 便携版</h3>
+            <p>自带依赖，开箱即用。适合多数用户。</p>
+            <ul class="list">
+              <li>体积更大，但无需额外运行库</li>
+              <li>适合快速部署或离线使用</li>
+            </ul>
+          </article>
+          <article class="card download-card reveal" data-reveal>
+            <h3>System 依赖版</h3>
+            <p>不包含运行库，体积更小。</p>
+            <ul class="list">
+              <li>需要 Windows App SDK Runtime</li>
+              <li>需要 VC++ 运行库与 WebView2 Runtime</li>
+            </ul>
+          </article>
+        </div>
+        <p class="section-subtitle reveal" data-reveal>
+          Releases 地址：<a href="https://github.com/RE-TikaRa/FileLocksmith/releases">https://github.com/RE-TikaRa/FileLocksmith/releases</a>
+        </p>
+      </div>
+    </section>
+    <section class="section" id="usage">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Usage</p>
+            <h2 class="section-title">运行方式与 CLI</h2>
+          </div>
+          <p class="section-subtitle">可以通过 GUI 管理、右键菜单或命令行使用。</p>
+        </div>
+        <div class="grid-3">
+          <article class="card reveal" data-reveal>
+            <h3>直接启动</h3>
+            <p>运行主程序进入管理界面，统一管理注册状态与显示方式。</p>
+          </article>
+          <article class="card reveal" data-reveal>
+            <h3>右键菜单</h3>
+            <p>从资源管理器进入扫描/解锁界面，定位占用并结束进程。</p>
+          </article>
+          <article class="card reveal" data-reveal>
+            <h3>CLI 工具</h3>
+            <p>FileLocksmithCLI.exe 支持 JSON 输出、等待解锁与超时控制。</p>
+          </article>
+        </div>
+        <div class="code-block reveal" data-reveal>
+          FileLocksmithCLI.exe [选项] &lt;路径1&gt; [路径2] ...
+          <br />选项:
+          <br />--kill&nbsp;&nbsp;&nbsp;&nbsp;结束占用文件的进程
+          <br />--json&nbsp;&nbsp;&nbsp;&nbsp;以 JSON 格式输出结果
+          <br />--wait&nbsp;&nbsp;&nbsp;&nbsp;等待文件解锁
+          <br />--timeout&nbsp;&nbsp;--wait 的超时（毫秒）
+          <br />--help&nbsp;&nbsp;&nbsp;&nbsp;显示帮助
+        </div>
+        <div class="download-grid spaced">
+          <article class="card reveal" data-reveal>
+            <h3>配置与数据位置</h3>
+            <ul class="list">
+              <li>根目录：%LocalAppData%\ALp_Studio\FileLocksmith</li>
+              <li>设置文件：file-locksmith-settings.json</li>
+              <li>日志：Logs\log.log / Logs\Log_YYYY-MM-DD.log</li>
+            </ul>
+          </article>
+          <article class="card reveal" data-reveal>
+            <h3>状态与策略</h3>
+            <ul class="list">
+              <li>组策略：HKLM\Software\Policies\FileLocksmith</li>
+              <li>注册标记：HKCU\Software\FileLocksmith</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="docs">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Docs</p>
+            <h2 class="section-title">项目文档</h2>
+          </div>
+          <p class="section-subtitle">完整文档覆盖下载、配置、构建、便携包常见问题与维护说明。</p>
+        </div>
+        <div class="doc-grid">
+          <a class="card link-card reveal" data-reveal href="https://re-tikara.fun/Blog/posts/5d98e7ac/">
+            <span class="pill">官方文档</span>
+            <h3>File Locksmith 项目说明</h3>
+            <p>下载方式、运行说明、注册表与 GPO、CLI 参数、结构速览与构建打包流程一应俱全。</p>
+            <p class="subtle">打开网页查看完整版本更新与说明。</p>
+          </a>
+          <article class="card reveal" data-reveal>
+            <h3>文档包含内容</h3>
+            <ul class="list">
+              <li>运行时依赖与版本锁定说明</li>
+              <li>配置/日志/策略位置</li>
+              <li>便携包常见问题与排查</li>
+              <li>构建脚本与输出目录</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="build">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Build</p>
+            <h2 class="section-title">构建环境与依赖锁定</h2>
+          </div>
+          <p class="section-subtitle">项目固定关键依赖版本，降低环境变动带来的不确定性。</p>
+        </div>
+        <div class="download-grid">
+          <article class="card reveal" data-reveal>
+            <h3>推荐环境</h3>
+            <ul class="list">
+              <li>Windows 11 + Visual Studio 2022</li>
+              <li>.NET SDK 9（net9.0-windows10.0.26100.0）</li>
+              <li>Windows 11 SDK 10.0.26100.68-preview</li>
+              <li>Windows App SDK 1.8.251106002</li>
+            </ul>
+          </article>
+          <article class="card reveal" data-reveal>
+            <h3>核心组件</h3>
+            <ul class="list">
+              <li>C#/WinRT 2.2.0 · C++/WinRT 2.0.240111.5</li>
+              <li>WIL 1.0.231216.1 · CommunityToolkit.WinUI</li>
+              <li>内置依赖：spdlog / expected-lite</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head reveal" data-reveal>
+          <div>
+            <p class="eyebrow">FAQ</p>
+            <h2 class="section-title">常见问题</h2>
+          </div>
+          <p class="section-subtitle">快速回答下载、依赖与使用场景的关键问题。</p>
+        </div>
+        <div class="faq-grid">
+          <details class="faq-item reveal" data-reveal>
+            <summary>便携版与 System 依赖版有什么区别？</summary>
+            <p>便携版自带运行库，体积更大但开箱即用；System 版更轻量，需要系统已安装运行时依赖。</p>
+          </details>
+          <details class="faq-item reveal" data-reveal>
+            <summary>为什么需要提升权限？</summary>
+            <p>涉及注册/卸载右键菜单与查看系统进程时需要管理员权限，以确保操作可生效。</p>
+          </details>
+          <details class="faq-item reveal" data-reveal>
+            <summary>设置与日志存放在哪里？</summary>
+            <p>默认位于 %LocalAppData%\\ALp_Studio\\FileLocksmith，可在“配置与数据位置”中查看详细路径。</p>
+          </details>
+          <details class="faq-item reveal" data-reveal>
+            <summary>CLI 适合什么场景？</summary>
+            <p>适合自动化脚本或批量解锁场景，支持 JSON 输出、等待解锁与超时控制。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+    <section class="section cta-section">
+      <div class="container">
+        <div class="cta-card reveal" data-reveal>
+          <div>
+            <p class="eyebrow">Get Started</p>
+            <h2 class="section-title">现在就把占用文件找出来</h2>
+            <p class="section-subtitle">开源、轻量、专注于 Win11 的文件占用解除体验。</p>
+          </div>
+          <div class="cta-row">
+            <a class="btn primary" href="https://github.com/RE-TikaRa/FileLocksmith/releases">下载 Release</a>
+            <a class="btn ghost" href="https://github.com/RE-TikaRa/FileLocksmith">查看源码</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/LOGO.svg" alt="ALP Studio Logo" />
+          <div>
+            <strong>ALP Studio</strong>
+            <p>File Locksmith · 文件占用解除工具</p>
+          </div>
+        </div>
+        <div class="footer-links">
+          <strong>资源</strong>
+          <a href="https://github.com/RE-TikaRa/FileLocksmith/releases">Releases</a>
+          <a href="https://github.com/RE-TikaRa/FileLocksmith">GitHub</a>
+          <a href="https://re-tikara.fun/Blog/posts/5d98e7ac/">项目文档</a>
+        </div>
+        <div class="footer-links">
+          <strong>信息</strong>
+          <a href="https://re-tikara.fun">官方站点</a>
+          <a href="https://github.com/RE-TikaRa/FileLocksmith/blob/main/LICENSE">MIT License</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>创建日期：2026-01-29 · 制作者：亓翎_Re-TikaRa</span>
+        <span>许可证：MIT（继承 PowerToys 原始许可）</span>
+        <span>免责声明：本项目按“现状”提供，使用文件占用解除功能前请自行确认风险。</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
