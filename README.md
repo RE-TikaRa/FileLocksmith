@@ -4,32 +4,9 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 
 ## 项目信息
 
-原始项目仓库：https://github.com/microsoft/PowerToys
-本项目从 PowerToys 0.97.1 的 File Locksmith 拆分而来，保留右键菜单体验并新增管理主界面，形成单工具版本。
-仅在 Windows 11 24H2 26100.7623 环境下完成验证。
-
-## 依赖说明
-
-> 已做依赖本地化处理，但测试覆盖有限，仍可能存在未覆盖场景。
-
-**构建环境**
-- Windows 11 + Visual Studio 2022（Build Tools 或 Professional，含 C++ 工具集与 MSBuild）
-- .NET SDK 9（TargetFramework: `net9.0-windows10.0.26100.0`）
-- Windows 11 SDK（WindowsSdkPackageVersion: `10.0.26100.68-preview`）
-- PowerShell 5+（便携包脚本）
-
-**核心依赖（NuGet/源码）**
-- Windows App SDK `1.8.251106002`
-- C#/WinRT `Microsoft.Windows.CsWinRT 2.2.0`
-- C++/WinRT `Microsoft.Windows.CppWinRT 2.0.240111.5`
-- WIL `Microsoft.Windows.ImplementationLibrary 1.0.231216.1`
-- UI 组件：CommunityToolkit.WinUI.*、WinUIEx
-- C++ 依赖（仓库内置）：`deps/spdlog`、`deps/expected-lite`
-
-**运行时依赖**
-- Windows App SDK Runtime（便携包内会自带）
-- VC++ 运行库（便携包脚本会尝试复制）
-- WebView2 Runtime（WinUI WebView2）
+- 原始项目仓库：https://github.com/microsoft/PowerToys
+- 拆分自 PowerToys 0.97.1 的 File Locksmith
+- 目标环境：Windows 11 24H2 26100.7623
 
 ## 界面预览
 
@@ -56,10 +33,37 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 - 从右键菜单启动：进入扫描/解锁界面
 - CLI：`FileLocksmithCLI.exe`
 
+## 依赖说明
+
+> 本项目已尽量对关键依赖进行本地化与版本固定，以降低外部环境变化带来的不确定性。
+> 但由于 Windows SDK、运行库与系统环境差异较大，仍可能出现未覆盖的构建或运行问题。
+> 本地化范围主要包含仓库内置的 C++ 依赖（如 `deps/spdlog`、`deps/expected-lite`）以及明确的 NuGet 版本锁定。
+> 仍需在线还原的依赖以 `Directory.Packages.props`/`packages.config` 为准。
+> 如遇异常，请提交 issue 并附上系统版本、构建日志或崩溃日志，便于定位与完善。
+
+**构建环境**
+- Windows 11 + Visual Studio 2022（Build Tools 或 Professional，含 C++ 工具集与 MSBuild）
+- .NET SDK 9（TargetFramework: `net9.0-windows10.0.26100.0`）
+- Windows 11 SDK（WindowsSdkPackageVersion: `10.0.26100.68-preview`）
+- PowerShell 5+（便携包脚本）
+
+**核心依赖（NuGet/源码）**
+- Windows App SDK `1.8.251106002`
+- C#/WinRT `Microsoft.Windows.CsWinRT 2.2.0`
+- C++/WinRT `Microsoft.Windows.CppWinRT 2.0.240111.5`
+- WIL `Microsoft.Windows.ImplementationLibrary 1.0.231216.1`
+- UI 组件：CommunityToolkit.WinUI.*、WinUIEx
+- C++ 依赖（仓库内置）：`deps/spdlog`、`deps/expected-lite`
+
+**运行时依赖**
+- Windows App SDK Runtime（便携包内会自带）
+- VC++ 运行库（便携包脚本会尝试复制）
+- WebView2 Runtime（WinUI WebView2）
+
 ## 配置与数据位置（独立路径）
 
 **根目录**
-`%LocalAppData%\ALp_Studio\FileLocksmith`
+`%LocalAppData%\\ALp_Studio\\FileLocksmith`
 
 **设置文件**
 `file-locksmith-settings.json`
@@ -70,15 +74,15 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 `last-run.log`：上次选择路径列表（UTF-16 + 换行，空行终止）
 
 **日志**
-- `Logs\log.log`（原生日志）
-- `Logs\Log_YYYY-MM-DD.log`（托管日志）
-> 不再使用版本子目录，历史的 `Logs\<版本>` 可删除。
+- `Logs\\log.log`（原生日志）
+- `Logs\\Log_YYYY-MM-DD.log`（托管日志）
+> 不再使用版本子目录，历史的 `Logs\\<版本>` 可删除。
 
 ## 组策略（GPO）
 
 管理员可通过策略强制启用/禁用：
 
-`HKLM\Software\Policies\FileLocksmith`
+`HKLM\\Software\\Policies\\FileLocksmith`
 - `Enabled`（DWORD）：`1` 启用，`0` 禁用
 若存在该键值，将覆盖本地设置。
 
@@ -86,7 +90,7 @@ File Locksmith 是用于定位并解除文件/文件夹占用的工具。
 
 用于记录右键菜单注册状态（脚本写入）：
 
-`HKCU\Software\FileLocksmith`
+`HKCU\\Software\\FileLocksmith`
 - `ContextMenuRegistered`（DWORD）
 
 ## CLI 使用
@@ -135,28 +139,28 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 - 删除 `x64/`
 - 删除 `artifacts/FileLocksmithPortable/`
 - 删除 `src/**/bin` 与 `src/**/obj`
-- 删除旧版日志子目录 `Logs\<版本>`（如果仍存在）
+- 删除旧版日志子目录 `Logs\\<版本>`（如果仍存在）
 
 **构建 UI（Release x64）**
 ```
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64 /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithUI/FileLocksmithUI.csproj /restore /p:Configuration=Release /p:Platform=x64 /p:RunAnalyzers=false /p:RunCodeAnalysis=false /p:EnableNETAnalyzers=false /p:EnforceCodeStyleInBuild=false /p:TreatWarningsAsErrors=false
 ```
 
 **构建 CLI（Release x64）**
 ```
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithCLI/FileLocksmithCLI.vcxproj /p:Configuration=Release /p:Platform=x64
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithCLI/FileLocksmithCLI.vcxproj /p:Configuration=Release /p:Platform=x64
 ```
 
 **构建原生组件（Release x64）**
 ```
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithLib/FileLocksmithLib.vcxproj /p:Configuration=Release /p:Platform=x64
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithLibInterop/FileLocksmithLibInterop.vcxproj /p:Configuration=Release /p:Platform=x64
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithLib/FileLocksmithLib.vcxproj /p:Configuration=Release /p:Platform=x64
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithLibInterop/FileLocksmithLibInterop.vcxproj /p:Configuration=Release /p:Platform=x64
 ```
 
 **构建右键菜单组件（Release x64）**
 ```
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithContextMenu/FileLocksmithContextMenu.vcxproj /p:Configuration=Release /p:Platform=x64
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithExt/FileLocksmithExt.vcxproj /p:Configuration=Release /p:Platform=x64
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithContextMenu/FileLocksmithContextMenu.vcxproj /p:Configuration=Release /p:Platform=x64
+"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe" src/modules/FileLocksmith/FileLocksmithExt/FileLocksmithExt.vcxproj /p:Configuration=Release /p:Platform=x64
 ```
 
 **CLI 与原生项目（可选）**
@@ -165,7 +169,7 @@ FileLocksmithCLI.exe [选项] <路径1> [路径2] ...
 ## 便携包
 
 ```
-powershell -ExecutionPolicy Bypass -File tools\FileLocksmithPortable\pack.ps1 -Platform x64 -Configuration Release
+powershell -ExecutionPolicy Bypass -File tools\\FileLocksmithPortable\\pack.ps1 -Platform x64 -Configuration Release
 ```
 
 **便携版构建/打包常见问题**
